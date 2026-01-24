@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jarvis-mcp"
+version = "0.1.0"
+description = "MCP server for jarvis - exposes jarvis services as tools for Claude"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Jarvis Team"}
+]
+dependencies = [
+    "mcp>=1.0.0",
+    "httpx>=0.24.0",
+    "starlette>=0.36.0",
+    "uvicorn>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-httpx>=0.21.0",
+]
+
+[project.scripts]
+jarvis-mcp = "jarvis_mcp.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["jarvis_mcp*"]

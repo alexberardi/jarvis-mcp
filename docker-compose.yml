@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  jarvis-mcp:
+    build: .
+    container_name: jarvis-mcp
+    ports:
+      - "${JARVIS_MCP_PORT:-8011}:${JARVIS_MCP_PORT:-8011}"
+    environment:
+      - JARVIS_MCP_HOST=0.0.0.0
+      - JARVIS_MCP_PORT=${JARVIS_MCP_PORT:-8011}
+      - JARVIS_MCP_TOOLS=${JARVIS_MCP_TOOLS:-logs,debug}
+      - JARVIS_LOGS_URL=${JARVIS_LOGS_URL:-http://jarvis-logs:8006}
+      - JARVIS_AUTH_URL=${JARVIS_AUTH_URL:-http://jarvis-auth:8007}
+      - JARVIS_RECIPES_URL=${JARVIS_RECIPES_URL:-http://jarvis-recipes:8001}
+      - JARVIS_COMMAND_CENTER_URL=${JARVIS_COMMAND_CENTER_URL:-http://jarvis-command-center:8002}
+      - JARVIS_APP_ID=${JARVIS_APP_ID:-jarvis-mcp}
+      - JARVIS_APP_KEY=${JARVIS_APP_KEY:-}
+    networks:
+      - jarvis-network
+    restart: unless-stopped
+
+networks:
+  jarvis-network:
+    external: true
+    name: jarvis-logs_jarvis-logs-network
