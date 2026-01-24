@@ -11,13 +11,16 @@ class JarvisMcpConfig:
     port: int = 8011
 
     # Tool groups to enable (comma-separated in env, or list)
-    enabled_tools: set[str] = field(default_factory=lambda: {"logs", "debug"})
+    enabled_tools: set[str] = field(default_factory=lambda: {"logs", "debug", "health"})
 
     # Service URLs
     logs_url: str = "http://localhost:8006"
     auth_url: str = "http://localhost:8007"
     recipes_url: str = "http://localhost:8001"
     command_center_url: str = "http://localhost:8002"
+    whisper_url: str = "http://localhost:9999"
+    ocr_url: str = "http://localhost:5009"
+    llm_proxy_url: str = "http://localhost:8000"
 
     # Auth (optional - for authenticated endpoints)
     app_id: str | None = None
@@ -37,6 +40,9 @@ class JarvisMcpConfig:
             auth_url=os.getenv("JARVIS_AUTH_URL", "http://localhost:8007"),
             recipes_url=os.getenv("JARVIS_RECIPES_URL", "http://localhost:8001"),
             command_center_url=os.getenv("JARVIS_COMMAND_CENTER_URL", "http://localhost:8002"),
+            whisper_url=os.getenv("JARVIS_WHISPER_URL", "http://localhost:9999"),
+            ocr_url=os.getenv("JARVIS_OCR_URL", "http://localhost:5009"),
+            llm_proxy_url=os.getenv("JARVIS_LLM_PROXY_URL", "http://localhost:8000"),
             app_id=os.getenv("JARVIS_APP_ID"),
             app_key=os.getenv("JARVIS_APP_KEY"),
         )

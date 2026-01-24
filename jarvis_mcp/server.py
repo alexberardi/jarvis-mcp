@@ -7,6 +7,7 @@ from mcp.types import Tool, TextContent
 from jarvis_mcp.config import config
 from jarvis_mcp.tools.logs import LOGS_TOOLS, handle_logs_tool
 from jarvis_mcp.tools.debug import DEBUG_TOOLS, handle_debug_tool
+from jarvis_mcp.tools.health import HEALTH_TOOLS, handle_health_tool
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,10 @@ def get_enabled_tools() -> list[Tool]:
     if config.is_enabled("debug"):
         tools.extend(DEBUG_TOOLS)
         logger.info("Enabled tool group: debug (%d tools)", len(DEBUG_TOOLS))
+
+    if config.is_enabled("health"):
+        tools.extend(HEALTH_TOOLS)
+        logger.info("Enabled tool group: health (%d tools)", len(HEALTH_TOOLS))
 
     # Future tool groups can be added here:
     # if config.is_enabled("recipes"):
@@ -56,6 +61,11 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
         if not config.is_enabled("debug"):
             return [TextContent(type="text", text="Debug tools are not enabled")]
         return await handle_debug_tool(name, arguments)
+
+    elif name.startswith("health_"):
+        if not config.is_enabled("health"):
+            return [TextContent(type="text", text="Health tools are not enabled")]
+        return await handle_health_tool(name, arguments)
 
     # Future handlers:
     # elif name.startswith("recipes_"):
