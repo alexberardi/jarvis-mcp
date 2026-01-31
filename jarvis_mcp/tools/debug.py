@@ -38,7 +38,7 @@ DEBUG_TOOLS: list[Tool] = [
     ),
 ]
 
-# Known services and their health endpoints (all use /health)
+# Known services and their health endpoints (standardized to /health)
 KNOWN_SERVICES = {
     "logs": {"url_key": "logs_url", "health": "/health"},
     "auth": {"url_key": "auth_url", "health": "/health"},
