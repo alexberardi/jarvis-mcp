@@ -46,10 +46,17 @@ Add to your `~/.claude.json` or project `.claude/settings.json`:
 {
   "mcpServers": {
     "jarvis": {
+      "type": "sse",
       "url": "http://localhost:8011/sse"
     }
   }
 }
+```
+
+Or use the CLI:
+
+```bash
+claude mcp add --transport sse jarvis http://localhost:8011/sse
 ```
 
 For Docker deployment (different host):
@@ -58,6 +65,7 @@ For Docker deployment (different host):
 {
   "mcpServers": {
     "jarvis": {
+      "type": "sse",
       "url": "http://your-server:8011/sse"
     }
   }
