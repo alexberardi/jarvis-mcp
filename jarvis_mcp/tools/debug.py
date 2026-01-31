@@ -38,15 +38,15 @@ DEBUG_TOOLS: list[Tool] = [
     ),
 ]
 
-# Known services and their health endpoints
+# Known services and their health endpoints (all use /health)
 KNOWN_SERVICES = {
     "logs": {"url_key": "logs_url", "health": "/health"},
     "auth": {"url_key": "auth_url", "health": "/health"},
     "recipes": {"url_key": "recipes_url", "health": "/health"},
-    "command-center": {"url_key": "command_center_url", "health": "/api/v0/health"},
-    "whisper": {"url_key": "whisper_url", "health": "/ping"},
-    "tts": {"url_key": "tts_url", "health": "/ping"},
-    "llm-proxy": {"url_key": "llm_proxy_url", "health": "/v1/health"},
+    "command-center": {"url_key": "command_center_url", "health": "/health"},
+    "whisper": {"url_key": "whisper_url", "health": "/health"},
+    "tts": {"url_key": "tts_url", "health": "/health"},
+    "llm-proxy": {"url_key": "llm_proxy_url", "health": "/health"},
 }
 
 
