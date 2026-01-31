@@ -29,7 +29,7 @@ DEBUG_TOOLS: list[Tool] = [
             "properties": {
                 "service": {
                     "type": "string",
-                    "enum": ["logs", "auth", "recipes", "command-center"],
+                    "enum": ["logs", "auth", "recipes", "command-center", "whisper", "tts", "llm-proxy"],
                     "description": "Service to get info about",
                 },
             },
@@ -44,6 +44,9 @@ KNOWN_SERVICES = {
     "auth": {"url_key": "auth_url", "health": "/health"},
     "recipes": {"url_key": "recipes_url", "health": "/health"},
     "command-center": {"url_key": "command_center_url", "health": "/api/v0/health"},
+    "whisper": {"url_key": "whisper_url", "health": "/ping"},
+    "tts": {"url_key": "tts_url", "health": "/ping"},
+    "llm-proxy": {"url_key": "llm_proxy_url", "health": "/v1/health"},
 }
 
 

@@ -18,7 +18,8 @@ class JarvisMcpConfig:
     auth_url: str = "http://localhost:8007"
     recipes_url: str = "http://localhost:8001"
     command_center_url: str = "http://localhost:8002"
-    whisper_url: str = "http://localhost:9999"
+    whisper_url: str = "http://localhost:8012"
+    tts_url: str = "http://localhost:8009"
     ocr_url: str = "http://localhost:5009"
     llm_proxy_url: str = "http://localhost:8000"
 
@@ -40,7 +41,8 @@ class JarvisMcpConfig:
             auth_url=os.getenv("JARVIS_AUTH_URL", "http://localhost:8007"),
             recipes_url=os.getenv("JARVIS_RECIPES_URL", "http://localhost:8001"),
             command_center_url=os.getenv("JARVIS_COMMAND_CENTER_URL", "http://localhost:8002"),
-            whisper_url=os.getenv("JARVIS_WHISPER_URL", "http://localhost:9999"),
+            whisper_url=os.getenv("JARVIS_WHISPER_URL", "http://localhost:8012"),
+            tts_url=os.getenv("JARVIS_TTS_URL", "http://localhost:8009"),
             ocr_url=os.getenv("JARVIS_OCR_URL", "http://localhost:5009"),
             llm_proxy_url=os.getenv("JARVIS_LLM_PROXY_URL", "http://localhost:8000"),
             app_id=os.getenv("JARVIS_APP_ID"),
