@@ -24,9 +24,16 @@ else
         export $(cat .env | grep -v '^#' | xargs)
     fi
 
+    # Use venv if it exists
+    if [ -d "venv" ]; then
+        source venv/bin/activate
+    elif [ -d ".venv" ]; then
+        source .venv/bin/activate
+    fi
+
     echo "Starting jarvis-mcp locally..."
     echo "  Port: ${JARVIS_MCP_PORT:-8011}"
     echo "  Tools: ${JARVIS_MCP_TOOLS:-logs,debug}"
     echo ""
-    python -m jarvis_mcp
+    python3 -m jarvis_mcp
 fi

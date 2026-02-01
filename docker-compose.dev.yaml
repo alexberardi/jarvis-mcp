@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   jarvis-mcp:
     build: .
@@ -10,6 +8,10 @@ services:
       - JARVIS_MCP_HOST=0.0.0.0
       - JARVIS_MCP_PORT=${JARVIS_MCP_PORT:-8011}
       - JARVIS_MCP_TOOLS=${JARVIS_MCP_TOOLS:-logs,debug}
+      # Service discovery (preferred)
+      - JARVIS_CONFIG_URL=http://host.docker.internal:8013
+      - JARVIS_CONFIG_URL_STYLE=dockerized
+      # Fallback URLs (only used if config service unavailable)
       - JARVIS_LOGS_URL=${JARVIS_LOGS_URL:-http://host.docker.internal:8006}
       - JARVIS_AUTH_URL=${JARVIS_AUTH_URL:-http://host.docker.internal:8007}
       - JARVIS_RECIPES_URL=${JARVIS_RECIPES_URL:-http://host.docker.internal:8001}
@@ -20,3 +22,7 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - ./jarvis_mcp:/app/jarvis_mcp
+      - ../jarvis-config-client:/app/jarvis-config-client
+    command: >
+      sh -c "pip install -q -e /app/jarvis-config-client &&
+             python -m jarvis_mcp"

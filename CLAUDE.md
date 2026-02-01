@@ -49,9 +49,19 @@ jarvis_mcp/
 | `JARVIS_MCP_HOST` | localhost | Server host |
 | `JARVIS_MCP_PORT` | 8011 | Server port |
 | `JARVIS_MCP_TOOLS` | logs,debug | Enabled tool groups |
-| `JARVIS_LOGS_URL` | http://localhost:8006 | Logs service URL |
-| `JARVIS_AUTH_URL` | http://localhost:8007 | Auth service URL |
-| `JARVIS_COMMAND_CENTER_URL` | http://localhost:8002 | Command center URL |
+| `JARVIS_CONFIG_URL` | - | Config service URL (preferred) |
+| `JARVIS_CONFIG_URL_STYLE` | - | Set to `dockerized` in Docker |
+| `JARVIS_LOGS_URL` | http://localhost:8006 | Fallback: Logs service URL |
+| `JARVIS_AUTH_URL` | http://localhost:8007 | Fallback: Auth service URL |
+
+## Service Discovery
+
+Service URLs are fetched from `jarvis-config-service` at startup:
+1. If `JARVIS_CONFIG_URL` is set, URLs are fetched from config service
+2. If config service unavailable, falls back to `JARVIS_*_URL` env vars
+3. Background refresh every 5 minutes
+
+For Docker: Set `JARVIS_CONFIG_URL_STYLE=dockerized` to get `host.docker.internal` URLs.
 
 ## Available Tools
 
@@ -67,6 +77,7 @@ jarvis_mcp/
 
 ## API Endpoints
 
+- `GET /health` → Health check (returns JSON with status, enabled tools, service discovery state)
 - `GET /sse` → SSE connection for MCP clients
 - `POST /messages` → MCP message endpoint
 
