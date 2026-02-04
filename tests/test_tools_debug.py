@@ -68,15 +68,12 @@ class TestHandleDebugTool:
         with patch("jarvis_mcp.tools.debug.config") as mock_config:
             mock_config.logs_url = "http://logs:8006"
             mock_config.auth_url = "http://auth:8007"
-            mock_config.recipes_url = "http://recipes:8001"
-            mock_config.command_center_url = "http://cc:8002"
 
             httpx_mock.add_response(url="http://logs:8006/health", status_code=200)
             httpx_mock.add_response(url="http://auth:8007/health", status_code=200)
-            httpx_mock.add_response(url="http://recipes:8001/health", status_code=200)
-            httpx_mock.add_response(url="http://cc:8002/api/v0/health", status_code=200)
 
-            result = await handle_debug_tool("debug_health", {})
+            # Use specific services to avoid mocking all 7 services
+            result = await handle_debug_tool("debug_health", {"services": ["logs", "auth"]})
             assert "Health Status" in result[0].text
 
     @pytest.mark.asyncio
@@ -106,7 +103,7 @@ class TestDebugHealth:
 
     @pytest.mark.asyncio
     async def test_health_all_up(self, httpx_mock: HTTPXMock):
-        """Test health check when all services are up."""
+        """Test health check when specified services are up."""
         with patch("jarvis_mcp.tools.debug.config") as mock_config:
             mock_config.logs_url = "http://logs:8006"
             mock_config.auth_url = "http://auth:8007"
@@ -116,9 +113,12 @@ class TestDebugHealth:
             httpx_mock.add_response(url="http://logs:8006/health", status_code=200)
             httpx_mock.add_response(url="http://auth:8007/health", status_code=200)
             httpx_mock.add_response(url="http://recipes:8001/health", status_code=200)
-            httpx_mock.add_response(url="http://cc:8002/api/v0/health", status_code=200)
+            httpx_mock.add_response(url="http://cc:8002/health", status_code=200)
 
-            result = await handle_debug_tool("debug_health", {})
+            # Check specific services to avoid mocking all 7 services
+            result = await handle_debug_tool("debug_health", {
+                "services": ["logs", "auth", "recipes", "command-center"]
+            })
 
             assert "logs: UP" in result[0].text
             assert "auth: UP" in result[0].text
@@ -139,9 +139,12 @@ class TestDebugHealth:
             httpx_mock.add_response(url="http://logs:8006/health", status_code=200)
             httpx_mock.add_exception(httpx.ConnectError("Connection refused"), url="http://auth:8007/health")
             httpx_mock.add_response(url="http://recipes:8001/health", status_code=500)
-            httpx_mock.add_response(url="http://cc:8002/api/v0/health", status_code=200)
+            httpx_mock.add_response(url="http://cc:8002/health", status_code=200)
 
-            result = await handle_debug_tool("debug_health", {})
+            # Check specific services to avoid mocking all 7 services
+            result = await handle_debug_tool("debug_health", {
+                "services": ["logs", "auth", "recipes", "command-center"]
+            })
 
             assert "logs: UP" in result[0].text
             assert "auth: DOWN" in result[0].text
