@@ -1,9 +1,13 @@
+import json
+import logging
 from typing import Any
 
 import httpx
 from mcp.types import Tool, TextContent
 
 from jarvis_mcp.config import config
+
+logger = logging.getLogger(__name__)
 
 # Tool definitions for the debug group
 DEBUG_TOOLS: list[Tool] = [
@@ -119,8 +123,8 @@ async def _debug_service_info(client: httpx.AsyncClient, args: dict[str, Any]) -
                             info_lines.append(f"    {k}: {v}")
                     else:
                         info_lines.append(f"  {key}: {value}")
-            except Exception:
-                pass
+            except json.JSONDecodeError as e:
+                logger.debug("Failed to parse health response as JSON: %s", e)
     except httpx.RequestError as e:
         info_lines.append(f"  Status: UNREACHABLE ({e})")
 

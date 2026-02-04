@@ -22,3 +22,4 @@ env/
 build/
 dist/
 *.egg-info/
+poetry.lock

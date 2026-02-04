@@ -122,8 +122,17 @@ class JarvisMcpConfig:
         except ImportError:
             logger.warning("jarvis-config-client not installed - using env vars")
             return False
-        except Exception as e:
-            logger.error("Failed to initialize service discovery: %s", e)
+        except OSError as e:
+            logger.error("Network error during service discovery: %s", e)
+            return False
+        except (ValueError, KeyError) as e:
+            logger.error("Configuration parsing error during service discovery: %s", e)
+            return False
+        except (TypeError, AttributeError) as e:
+            logger.error("Config client API error during service discovery: %s", e)
+            return False
+        except RuntimeError as e:
+            logger.error("Runtime error during service discovery: %s", e)
             return False
 
     def _update_urls_from_config(self, get_service_url) -> None:

@@ -1,5 +1,6 @@
 """Health check tools for jarvis services."""
 
+import time
 from typing import Any
 
 import httpx
@@ -115,7 +116,6 @@ async def _health_check_single(args: dict[str, Any]) -> list[TextContent]:
 
     async with httpx.AsyncClient(timeout=10.0) as client:
         try:
-            import time
             start = time.monotonic()
             response = await client.get(f"{base_url}{health_path}")
             elapsed = int((time.monotonic() - start) * 1000)
@@ -140,8 +140,6 @@ async def _check_service(
     client: httpx.AsyncClient, base_url: str, health_path: str
 ) -> tuple[str, int, str]:
     """Check a single service. Returns (status, response_time_ms, details)."""
-    import time
-
     try:
         start = time.monotonic()
         response = await client.get(f"{base_url}{health_path}")
