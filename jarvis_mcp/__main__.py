@@ -2,10 +2,11 @@ import logging
 import sys
 
 import uvicorn
+from fastapi import FastAPI
 from mcp.server.sse import SseServerTransport
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse
-from starlette.routing import Route
+from starlette.routing import Route, Mount
 
 from jarvis_mcp.config import config
 from jarvis_mcp.server import server
@@ -44,6 +45,18 @@ async def handle_health(request):
     })
 
 
+# Create FastAPI sub-app for settings
+from jarvis_settings_client import create_settings_router
+from jarvis_mcp.services.settings_service import get_settings_service
+
+settings_app = FastAPI(title="jarvis-mcp settings")
+_settings_router = create_settings_router(
+    service=get_settings_service(),
+    auth_dependency=None,  # No auth for MCP settings (developer tool)
+)
+settings_app.include_router(_settings_router)
+
+
 # Create Starlette app
 app = Starlette(
     debug=True,
@@ -51,6 +64,7 @@ app = Starlette(
         Route("/health", endpoint=handle_health),
         Route("/sse", endpoint=handle_sse),
         Route("/messages", endpoint=handle_messages, methods=["POST"]),
+        Mount("/v1/settings", app=settings_app),
     ],
 )
 
