@@ -18,7 +18,6 @@ from jarvis_settings_client.types import SettingValue
 
 from jarvis_mcp.services.settings_definitions import SETTINGS_DEFINITIONS
 from jarvis_mcp.services.settings_service import (
-    MCPSettingsService,
     get_settings_service,
     reset_settings_service,
 )
@@ -57,44 +56,13 @@ class TestSettingsDefinitions:
         assert "server.port" in keys
 
 
-class TestMCPSettingsService:
-    """Tests for MCPSettingsService helper methods."""
-
-    @pytest.fixture
-    def service(self):
-        """Create a service instance for testing."""
-        return MCPSettingsService(
-            definitions=SETTINGS_DEFINITIONS,
-            get_db_session=lambda: None,
-            setting_model=None,
-        )
-
-    def test_get_mcp_config(self, service):
-        """Test get_mcp_config method."""
-        with patch.dict(os.environ, {
-            "JARVIS_MCP_TOOLS": "logs,debug,health",
-            "JARVIS_CONFIG_URL_STYLE": "dockerized",
-        }):
-            config = service.get_mcp_config()
-            assert config["enabled_tools"] == "logs,debug,health"
-            assert config["config_url_style"] == "dockerized"
-
-    def test_get_enabled_tools_list(self, service):
-        """Test get_enabled_tools_list method."""
-        with patch.dict(os.environ, {
-            "JARVIS_MCP_TOOLS": "logs,debug,health",
-        }):
-            tools = service.get_enabled_tools_list()
-            assert tools == ["logs", "debug", "health"]
-
-
 class TestSettingsServiceCache:
     """Tests for SettingsService caching behavior."""
 
     @pytest.fixture
     def service(self):
         """Create a service instance for testing."""
-        return MCPSettingsService(
+        return SettingsService(
             definitions=SETTINGS_DEFINITIONS,
             get_db_session=lambda: None,
             setting_model=None,
@@ -172,7 +140,7 @@ class TestSettingsServiceEnvFallback:
     @pytest.fixture
     def service(self):
         """Create a service instance for testing."""
-        return MCPSettingsService(
+        return SettingsService(
             definitions=SETTINGS_DEFINITIONS,
             get_db_session=lambda: None,
             setting_model=None,
@@ -203,7 +171,7 @@ class TestSettingsServiceTypedGetters:
     @pytest.fixture
     def service(self):
         """Create a service instance for testing."""
-        return MCPSettingsService(
+        return SettingsService(
             definitions=SETTINGS_DEFINITIONS,
             get_db_session=lambda: None,
             setting_model=None,
@@ -230,7 +198,7 @@ class TestSettingsServiceListMethods:
     @pytest.fixture
     def service(self):
         """Create a service instance for testing."""
-        return MCPSettingsService(
+        return SettingsService(
             definitions=SETTINGS_DEFINITIONS,
             get_db_session=lambda: None,
             setting_model=None,
