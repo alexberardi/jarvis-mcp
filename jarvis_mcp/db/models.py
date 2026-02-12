@@ -1,6 +1,5 @@
 """Database models for jarvis-mcp."""
 
-from datetime import datetime
 
 from sqlalchemy import (
     Boolean,
