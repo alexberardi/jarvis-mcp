@@ -8,6 +8,8 @@ from jarvis_mcp.config import config
 from jarvis_mcp.tools.logs import LOGS_TOOLS, handle_logs_tool
 from jarvis_mcp.tools.debug import DEBUG_TOOLS, handle_debug_tool
 from jarvis_mcp.tools.health import HEALTH_TOOLS, handle_health_tool
+from jarvis_mcp.tools.tests import TESTS_TOOLS, handle_tests_tool
+from jarvis_mcp.tools.database import DB_TOOLS, handle_db_tool
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,14 @@ def get_enabled_tools() -> list[Tool]:
     if config.is_enabled("health"):
         tools.extend(HEALTH_TOOLS)
         logger.info("Enabled tool group: health (%d tools)", len(HEALTH_TOOLS))
+
+    if config.is_enabled("tests"):
+        tools.extend(TESTS_TOOLS)
+        logger.info("Enabled tool group: tests (%d tools)", len(TESTS_TOOLS))
+
+    if config.is_enabled("db"):
+        tools.extend(DB_TOOLS)
+        logger.info("Enabled tool group: db (%d tools)", len(DB_TOOLS))
 
     # Future tool groups can be added here:
     # if config.is_enabled("recipes"):
@@ -66,6 +76,16 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
         if not config.is_enabled("health"):
             return [TextContent(type="text", text="Health tools are not enabled")]
         return await handle_health_tool(name, arguments)
+
+    elif name == "run_tests" or name.startswith("tests_"):
+        if not config.is_enabled("tests"):
+            return [TextContent(type="text", text="Tests tools are not enabled")]
+        return await handle_tests_tool(name, arguments)
+
+    elif name.startswith("db_"):
+        if not config.is_enabled("db"):
+            return [TextContent(type="text", text="DB tools are not enabled")]
+        return await handle_db_tool(name, arguments)
 
     # Future handlers:
     # elif name.startswith("recipes_"):

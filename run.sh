@@ -16,7 +16,7 @@ if [[ "$1" == "--docker" ]]; then
     fi
 
     echo "Starting jarvis-mcp in Docker..."
-    docker compose -f docker-compose.dev.yaml up $BUILD_FLAGS
+    docker compose -f docker-compose.dev.yaml up $BUILD_FLAGS -d
 else
     # Local development mode
     # Load environment variables

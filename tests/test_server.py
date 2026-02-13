@@ -24,6 +24,26 @@ class TestGetEnabledTools:
             assert any(name.startswith("logs_") for name in tool_names)
             assert any(name.startswith("debug_") for name in tool_names)
 
+    def test_tests_enabled(self):
+        """Test with tests enabled."""
+        with patch("jarvis_mcp.server.config") as mock_config:
+            mock_config.is_enabled.side_effect = lambda x: x == "tests"
+
+            tools = get_enabled_tools()
+
+            tool_names = [t.name for t in tools]
+            assert "run_tests" in tool_names
+
+    def test_db_enabled(self):
+        """Test with db enabled."""
+        with patch("jarvis_mcp.server.config") as mock_config:
+            mock_config.is_enabled.side_effect = lambda x: x == "db"
+
+            tools = get_enabled_tools()
+
+            tool_names = [t.name for t in tools]
+            assert "db_list_databases" in tool_names
+
     def test_only_logs_enabled(self):
         """Test with only logs enabled."""
         with patch("jarvis_mcp.server.config") as mock_config:
@@ -140,11 +160,15 @@ class TestCallTool:
         """Test that tools are routed to correct handlers."""
         with patch("jarvis_mcp.server.config") as mock_config, \
              patch("jarvis_mcp.server.handle_logs_tool", new_callable=AsyncMock) as logs_handler, \
-             patch("jarvis_mcp.server.handle_debug_tool", new_callable=AsyncMock) as debug_handler:
+             patch("jarvis_mcp.server.handle_debug_tool", new_callable=AsyncMock) as debug_handler, \
+             patch("jarvis_mcp.server.handle_tests_tool", new_callable=AsyncMock) as tests_handler, \
+             patch("jarvis_mcp.server.handle_db_tool", new_callable=AsyncMock) as db_handler:
 
             mock_config.is_enabled.return_value = True
             logs_handler.return_value = [TextContent(type="text", text="logs")]
             debug_handler.return_value = [TextContent(type="text", text="debug")]
+            tests_handler.return_value = [TextContent(type="text", text="tests")]
+            db_handler.return_value = [TextContent(type="text", text="db")]
 
             # Call logs tool
             await call_tool("logs_tail", {"service": "test"})
@@ -157,3 +181,11 @@ class TestCallTool:
             await call_tool("debug_service_info", {"service": "logs"})
             debug_handler.assert_called_with("debug_service_info", {"service": "logs"})
             logs_handler.assert_not_called()
+
+            # Call tests tool
+            await call_tool("run_tests", {"service": "jarvis-auth"})
+            tests_handler.assert_called_with("run_tests", {"service": "jarvis-auth"})
+
+            # Call db tool
+            await call_tool("db_list_databases", {})
+            db_handler.assert_called_with("db_list_databases", {})

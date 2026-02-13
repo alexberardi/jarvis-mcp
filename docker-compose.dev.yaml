@@ -23,8 +23,9 @@ services:
     volumes:
       - ./jarvis_mcp:/app/jarvis_mcp
       - ../jarvis-config-client:/app/jarvis-config-client
+      - ../jarvis-settings-client:/app/jarvis-settings-client
     command: >
-      sh -c "pip install -q -e /app/jarvis-config-client &&
+      sh -c "pip install -q -e /app/jarvis-config-client -e /app/jarvis-settings-client &&
              python -m jarvis_mcp"
 
   postgres:
