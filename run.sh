@@ -25,11 +25,14 @@ else
     fi
 
     # Use venv if it exists
-    if [ -d "venv" ]; then
-        source venv/bin/activate
-    elif [ -d ".venv" ]; then
+    if [ -d ".venv" ]; then
         source .venv/bin/activate
     fi
+
+    # Install jarvis client libraries
+    JARVIS_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+    source "${JARVIS_ROOT}/scripts/install-clients.sh"
+    install_jarvis_clients config-client
 
     echo "Starting jarvis-mcp locally..."
     echo "  Port: ${JARVIS_MCP_PORT:-8011}"

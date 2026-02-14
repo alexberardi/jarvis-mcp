@@ -5,15 +5,18 @@ MCP (Model Context Protocol) server exposing jarvis services as tools for Claude
 ## Quick Reference
 
 ```bash
+# Setup
+python3 -m venv .venv
+.venv/bin/pip install -e ".[dev]"
+
 # Run
-pip install -e .
-python -m jarvis_mcp
+.venv/bin/python -m jarvis_mcp
 
 # Or with Docker
 docker-compose up -d
 
 # Test
-poetry run pytest
+.venv/bin/pytest
 ```
 
 ## Claude Code Integration
@@ -83,6 +86,21 @@ For Docker: Set `JARVIS_CONFIG_URL_STYLE=dockerized` to get `host.docker.interna
 
 ## Dependencies
 
+**Python Libraries:**
 - mcp (Model Context Protocol)
 - starlette, sse-starlette
 - httpx
+
+**Service Dependencies:**
+- ✅ **Required**: `jarvis-config-service` (8013) - Service discovery (preferred)
+- ⚠️ **Optional**: `jarvis-logs` (8006) - Log querying tools
+- ⚠️ **Optional**: `jarvis-auth` (8007) - Health checks and service info
+- Fallback to env vars if config-service unavailable
+
+**Used By:**
+- Claude Code (development environment)
+
+**Impact if Down:**
+- ⚠️ No Claude Code integration tools
+- ⚠️ Manual service interaction required
+- ✅ Services continue running normally
