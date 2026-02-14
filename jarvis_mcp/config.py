@@ -26,7 +26,7 @@ class JarvisMcpConfig:
     port: int = 7709
 
     # Tool groups to enable (comma-separated in env, or list)
-    enabled_tools: set[str] = field(default_factory=lambda: {"logs", "debug", "health"})
+    enabled_tools: set[str] = field(default_factory=lambda: {"logs", "debug", "health", "datetime"})
 
     # Service URLs (populated from config service or defaults)
     logs_url: str = "http://localhost:7702"

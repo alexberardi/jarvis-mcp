@@ -10,6 +10,7 @@ from jarvis_mcp.tools.debug import DEBUG_TOOLS, handle_debug_tool
 from jarvis_mcp.tools.health import HEALTH_TOOLS, handle_health_tool
 from jarvis_mcp.tools.tests import TESTS_TOOLS, handle_tests_tool
 from jarvis_mcp.tools.database import DB_TOOLS, handle_db_tool
+from jarvis_mcp.tools.datetime import DATETIME_TOOLS, handle_datetime_tool
 
 logger = logging.getLogger(__name__)
 
@@ -41,11 +42,9 @@ def get_enabled_tools() -> list[Tool]:
         tools.extend(DB_TOOLS)
         logger.info("Enabled tool group: db (%d tools)", len(DB_TOOLS))
 
-    # Future tool groups can be added here:
-    # if config.is_enabled("recipes"):
-    #     tools.extend(RECIPES_TOOLS)
-    # if config.is_enabled("auth"):
-    #     tools.extend(AUTH_TOOLS)
+    if config.is_enabled("datetime"):
+        tools.extend(DATETIME_TOOLS)
+        logger.info("Enabled tool group: datetime (%d tools)", len(DATETIME_TOOLS))
 
     return tools
 
@@ -87,11 +86,10 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
             return [TextContent(type="text", text="DB tools are not enabled")]
         return await handle_db_tool(name, arguments)
 
-    # Future handlers:
-    # elif name.startswith("recipes_"):
-    #     return await handle_recipes_tool(name, arguments)
-    # elif name.startswith("auth_"):
-    #     return await handle_auth_tool(name, arguments)
+    elif name.startswith("datetime_"):
+        if not config.is_enabled("datetime"):
+            return [TextContent(type="text", text="Datetime tools are not enabled")]
+        return await handle_datetime_tool(name, arguments)
 
     else:
         return [TextContent(type="text", text=f"Unknown tool: {name}")]
