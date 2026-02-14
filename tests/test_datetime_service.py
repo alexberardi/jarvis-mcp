@@ -282,6 +282,8 @@ class TestResolveDateKeys:
         }
         resolved, unresolved = resolve_date_keys(["tomorrow", "morning"], date_context)
         assert "2025-01-16T07:00:00Z" in resolved
+        # Raw base date should be removed when combined with time modifier
+        assert "2025-01-16T00:00:00Z" not in resolved
 
     def test_time_modifiers_not_unresolved(self):
         from jarvis_mcp.services.datetime_service import resolve_date_keys

@@ -112,7 +112,7 @@ def flatten_date_context(nested_context: dict[str, Any]) -> dict[str, Any]:
 def parse_time_string(time_str: str) -> tuple[int, int]:
     """Parse a time string like '9am', '3pm', '9_30am', '3_45pm'.
 
-    Returns (hour, minute) in 24-hour format.
+    Returns (hour, minute) in 24-hour format. Values are clamped to valid ranges.
     """
     # Try format with minutes: 9_30am, 3_45pm
     match = re.match(r"(\d+)_(\d+)(am|pm)", time_str)
@@ -123,7 +123,7 @@ def parse_time_string(time_str: str) -> tuple[int, int]:
             hour += 12
         elif match.group(3) == "am" and hour == 12:
             hour = 0
-        return hour, minute
+        return min(hour, 23), min(minute, 59)
 
     # Try format without minutes: 9am, 3pm
     match = re.match(r"(\d+)(am|pm)", time_str)
@@ -133,7 +133,7 @@ def parse_time_string(time_str: str) -> tuple[int, int]:
             hour += 12
         elif match.group(2) == "am" and hour == 12:
             hour = 0
-        return hour, 0
+        return min(hour, 23), 0
 
     return 0, 0
 
@@ -159,11 +159,14 @@ def apply_time_modifier(base_datetime: str, modifier: str) -> Optional[str]:
         "midnight": 0,
     }
 
-    if modifier in time_map:
-        dt = dt.replace(hour=time_map[modifier], minute=0, second=0, microsecond=0)
-    elif modifier.startswith("at_"):
-        hour, minute = parse_time_string(modifier[3:])
-        dt = dt.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    try:
+        if modifier in time_map:
+            dt = dt.replace(hour=time_map[modifier], minute=0, second=0, microsecond=0)
+        elif modifier.startswith("at_"):
+            hour, minute = parse_time_string(modifier[3:])
+            dt = dt.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    except ValueError:
+        return None
 
     return dt.astimezone(tz.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
@@ -279,6 +282,9 @@ def resolve_date_keys(
             combined = apply_time_modifier(base, time_key)
             if combined:
                 resolved.append(combined)
+                # Remove the raw base date since the combined version is more specific
+                if base in resolved:
+                    resolved.remove(base)
         elif isinstance(base, list):
             for entry in base:
                 if not isinstance(entry, str):
@@ -333,11 +339,12 @@ def generate_date_context_object(timezone_str: str | None = None) -> dict:
             return date_obj.strftime("%Y-%m-%dT00:00:00Z")
         try:
             user_tz = pytz.timezone(tz_str)
-            start_of_day = date_obj.replace(hour=0, minute=0, second=0, microsecond=0)
-            if start_of_day.tzinfo is None:
-                utc_start = user_tz.localize(start_of_day).astimezone(pytz.UTC)
-            else:
-                utc_start = start_of_day.astimezone(pytz.UTC)
+            # Always create naive datetime first, then localize properly
+            # (pytz requires localize() for correct DST handling)
+            naive_start = date_obj.replace(
+                hour=0, minute=0, second=0, microsecond=0, tzinfo=None
+            )
+            utc_start = user_tz.localize(naive_start).astimezone(pytz.UTC)
             return utc_start.strftime("%Y-%m-%dT%H:%M:%SZ")
         except (pytz.exceptions.UnknownTimeZoneError, ValueError):
             return date_obj.strftime("%Y-%m-%dT00:00:00Z")
@@ -397,7 +404,8 @@ def generate_date_context_object(timezone_str: str | None = None) -> dict:
     last_week_end = last_week_start + timedelta(days=6)
 
     # Calculate specific weekdays
-    weekday_names = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    # Week starts on Sunday (index 0), so Monday is at offset 1
+    weekday_names = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
 
     next_weekdays = {}
     for i, day in enumerate(weekday_names):
@@ -508,16 +516,16 @@ def generate_date_context_object(timezone_str: str | None = None) -> dict:
                 {"date": now.replace(month=12, day=31).strftime("%Y-%m-%d"), "utc_start_of_day": get_utc_start_of_day(now.replace(month=12, day=31), timezone_str)},
             ],
             "next_year": [
-                {"date": (now + timedelta(days=365)).replace(month=1, day=1).strftime("%Y-%m-%d"),
-                 "utc_start_of_day": get_utc_start_of_day((now + timedelta(days=365)).replace(month=1, day=1), timezone_str)},
-                {"date": (now + timedelta(days=365)).replace(month=12, day=31).strftime("%Y-%m-%d"),
-                 "utc_start_of_day": get_utc_start_of_day((now + timedelta(days=365)).replace(month=12, day=31), timezone_str)},
+                {"date": now.replace(year=now.year + 1, month=1, day=1).strftime("%Y-%m-%d"),
+                 "utc_start_of_day": get_utc_start_of_day(now.replace(year=now.year + 1, month=1, day=1), timezone_str)},
+                {"date": now.replace(year=now.year + 1, month=12, day=31).strftime("%Y-%m-%d"),
+                 "utc_start_of_day": get_utc_start_of_day(now.replace(year=now.year + 1, month=12, day=31), timezone_str)},
             ],
             "last_year": [
-                {"date": (now - timedelta(days=365)).replace(month=1, day=1).strftime("%Y-%m-%d"),
-                 "utc_start_of_day": get_utc_start_of_day((now - timedelta(days=365)).replace(month=1, day=1), timezone_str)},
-                {"date": (now - timedelta(days=365)).replace(month=12, day=31).strftime("%Y-%m-%d"),
-                 "utc_start_of_day": get_utc_start_of_day((now - timedelta(days=365)).replace(month=12, day=31), timezone_str)},
+                {"date": now.replace(year=now.year - 1, month=1, day=1).strftime("%Y-%m-%d"),
+                 "utc_start_of_day": get_utc_start_of_day(now.replace(year=now.year - 1, month=1, day=1), timezone_str)},
+                {"date": now.replace(year=now.year - 1, month=12, day=31).strftime("%Y-%m-%d"),
+                 "utc_start_of_day": get_utc_start_of_day(now.replace(year=now.year - 1, month=12, day=31), timezone_str)},
             ],
         },
         "weekdays": {

@@ -151,3 +151,40 @@ class TestDatetimeResolveTool:
         data = json.loads(result[0].text)
         assert len(data["resolved"]) == 1
         assert data["unresolved"] == []
+
+    @pytest.mark.asyncio
+    async def test_date_keys_not_a_list_returns_error(self):
+        from jarvis_mcp.tools.datetime import handle_datetime_tool
+        result = await handle_datetime_tool("datetime_resolve", {
+            "date_keys": "tomorrow",
+        })
+        data = json.loads(result[0].text)
+        assert "error" in data
+
+    @pytest.mark.asyncio
+    async def test_date_keys_too_many_returns_error(self):
+        from jarvis_mcp.tools.datetime import handle_datetime_tool
+        result = await handle_datetime_tool("datetime_resolve", {
+            "date_keys": [f"key_{i}" for i in range(101)],
+        })
+        data = json.loads(result[0].text)
+        assert "error" in data
+
+    @pytest.mark.asyncio
+    async def test_invalid_timezone_type_returns_error(self):
+        from jarvis_mcp.tools.datetime import handle_datetime_tool
+        result = await handle_datetime_tool("datetime_resolve", {
+            "date_keys": ["tomorrow"],
+            "timezone": 12345,
+        })
+        data = json.loads(result[0].text)
+        assert "error" in data
+
+    @pytest.mark.asyncio
+    async def test_context_invalid_timezone_type_returns_error(self):
+        from jarvis_mcp.tools.datetime import handle_datetime_tool
+        result = await handle_datetime_tool("datetime_context", {
+            "timezone": ["not", "a", "string"],
+        })
+        data = json.loads(result[0].text)
+        assert "error" in data

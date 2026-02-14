@@ -55,7 +55,7 @@ class JarvisMcpConfig:
     @classmethod
     def from_env(cls) -> "JarvisMcpConfig":
         """Load configuration from environment variables."""
-        tools_str = os.getenv("JARVIS_MCP_TOOLS", "logs,debug")
+        tools_str = os.getenv("JARVIS_MCP_TOOLS", "logs,debug,health,datetime")
         enabled_tools = {t.strip() for t in tools_str.split(",") if t.strip()}
 
         # Map env var names to config attribute names for service URLs

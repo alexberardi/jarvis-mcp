@@ -73,6 +73,8 @@ async def handle_datetime_tool(name: str, arguments: dict[str, Any]) -> list[Tex
 async def _datetime_context(args: dict[str, Any]) -> list[TextContent]:
     """Generate full date context for a timezone."""
     timezone_str = args.get("timezone", "UTC")
+    if not isinstance(timezone_str, str) or len(timezone_str) > 100:
+        return [TextContent(type="text", text='{"error": "invalid timezone parameter"}')]
     context = generate_date_context_object(timezone_str)
     return [TextContent(type="text", text=json.dumps(context, indent=2))]
 
@@ -83,7 +85,16 @@ async def _datetime_resolve(args: dict[str, Any]) -> list[TextContent]:
     if date_keys is None:
         return [TextContent(type="text", text='{"error": "date_keys is required"}')]
 
+    # Validate date_keys is a list of strings with a reasonable length limit
+    if not isinstance(date_keys, list):
+        return [TextContent(type="text", text='{"error": "date_keys must be a list"}')]
+    if len(date_keys) > 100:
+        return [TextContent(type="text", text='{"error": "date_keys exceeds maximum of 100 items"}')]
+    date_keys = [str(k) for k in date_keys]
+
     timezone_str = args.get("timezone", "UTC")
+    if not isinstance(timezone_str, str) or len(timezone_str) > 100:
+        return [TextContent(type="text", text='{"error": "invalid timezone parameter"}')]
 
     # Generate fresh date context for resolution
     date_context = generate_date_context_object(timezone_str)
