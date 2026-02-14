@@ -26,3 +26,22 @@ services:
     command: >
       sh -c "pip install -q -e /app/jarvis-config-client &&
              python -m jarvis_mcp"
+
+  postgres:
+    profiles: ["standalone"]
+    image: postgres:15
+    environment:
+      POSTGRES_DB: jarvis_mcp
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - mcp-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  mcp-pg-data:
