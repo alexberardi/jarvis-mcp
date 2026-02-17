@@ -67,7 +67,8 @@ class TestHandleRunTests:
     @pytest.mark.asyncio
     async def test_run_tests_success(self):
         fake_process = FakeProcess(stdout=b"ok", stderr=b"", returncode=0)
-        with patch("jarvis_mcp.tools.tests.asyncio.create_subprocess_exec", new_callable=AsyncMock) as mock_exec:
+        with patch("jarvis_mcp.tools.tests.asyncio.create_subprocess_exec", new_callable=AsyncMock) as mock_exec, \
+             patch.object(Path, "exists", return_value=True):
             mock_exec.return_value = fake_process
 
             result = await handle_tests_tool("run_tests", {"service": "jarvis-auth"})
@@ -89,7 +90,8 @@ class TestHandleRunTests:
     @pytest.mark.asyncio
     async def test_run_tests_rejects_args(self):
         fake_process = FakeProcess(stdout=b"ok", stderr=b"", returncode=0)
-        with patch("jarvis_mcp.tools.tests.asyncio.create_subprocess_exec", new_callable=AsyncMock) as mock_exec:
+        with patch("jarvis_mcp.tools.tests.asyncio.create_subprocess_exec", new_callable=AsyncMock) as mock_exec, \
+             patch.object(Path, "exists", return_value=True):
             mock_exec.return_value = fake_process
             result = await handle_tests_tool(
                 "run_tests", {"service": "jarvis-auth", "args": ["-k", "auth", "bad;rm"]}

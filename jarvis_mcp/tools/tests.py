@@ -28,6 +28,7 @@ SERVICE_DIRS: dict[str, Path] = {
 
 _SAFE_ARG_RE = re.compile(r"^[A-Za-z0-9_./:=\\-]+$")
 _MAX_OUTPUT_CHARS = 6000
+_VALID_CATEGORIES = {"pytest", "command-parsing", "database"}
 
 TESTS_TOOLS: list[Tool] = [
     Tool(
@@ -113,6 +114,14 @@ async def _run_tests(args: dict[str, Any]) -> list[TextContent]:
     category = args.get("category", "pytest")
     timeout_seconds = int(args.get("timeout_seconds", 900))
     extra_args, rejected_args = _sanitize_args(args.get("args"))
+
+    if category not in _VALID_CATEGORIES:
+        return [
+            TextContent(
+                type="text",
+                text="Invalid service/category selection. Provide a valid service or category.",
+            )
+        ]
 
     command, cwd = _build_command(service, category, extra_args)
     if not command or not cwd:

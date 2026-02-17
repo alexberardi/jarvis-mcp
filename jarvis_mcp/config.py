@@ -58,6 +58,25 @@ class JarvisMcpConfig:
         tools_str = os.getenv("JARVIS_MCP_TOOLS", "logs,debug")
         enabled_tools = {t.strip() for t in tools_str.split(",") if t.strip()}
 
+        # Map env var names to config attribute names for service URLs
+        env_url_map = {
+            "JARVIS_LOGS_URL": "logs_url",
+            "JARVIS_AUTH_URL": "auth_url",
+            "JARVIS_RECIPES_URL": "recipes_url",
+            "JARVIS_COMMAND_CENTER_URL": "command_center_url",
+            "JARVIS_WHISPER_URL": "whisper_url",
+            "JARVIS_TTS_URL": "tts_url",
+            "JARVIS_OCR_URL": "ocr_url",
+            "JARVIS_LLM_PROXY_URL": "llm_proxy_url",
+        }
+
+        # Build service URL kwargs from env vars (only override if set)
+        url_kwargs: dict[str, str] = {}
+        for env_var, attr_name in env_url_map.items():
+            value = os.getenv(env_var)
+            if value:
+                url_kwargs[attr_name] = value
+
         return cls(
             host=os.getenv("JARVIS_MCP_HOST", "localhost"),
             port=int(os.getenv("JARVIS_MCP_PORT", "8011")),
@@ -69,6 +88,7 @@ class JarvisMcpConfig:
             postgres_user=os.getenv("POSTGRES_USER", "devuser"),
             postgres_password=os.getenv("POSTGRES_PASSWORD", "devpassword"),
             postgres_db=os.getenv("POSTGRES_DB", "postgres"),
+            **url_kwargs,
         )
 
     def init_service_discovery(self) -> bool:
