@@ -5,12 +5,12 @@ MCP (Model Context Protocol) server for jarvis. Exposes jarvis services as tools
 ## Architecture
 
 ```
-Claude Code ◄──MCP (SSE/HTTP)──► jarvis-mcp (8011) ──HTTP──► jarvis services
+Claude Code ◄──MCP (SSE/HTTP)──► jarvis-mcp (7709) ──HTTP──► jarvis services
                                        │
-                                       ├──► jarvis-logs (8006)
-                                       ├──► jarvis-auth (8007)
-                                       ├──► jarvis-recipes (8001)
-                                       └──► jarvis-command-center (8002)
+                                       ├──► jarvis-logs (7702)
+                                       ├──► jarvis-auth (7701)
+                                       ├──► jarvis-recipes (7030)
+                                       └──► jarvis-command-center (7703)
 ```
 
 ## Quick Start
@@ -47,7 +47,7 @@ Add to your `~/.claude.json` or project `.claude/settings.json`:
   "mcpServers": {
     "jarvis": {
       "type": "sse",
-      "url": "http://localhost:8011/sse"
+      "url": "http://localhost:7709/sse"
     }
   }
 }
@@ -56,7 +56,7 @@ Add to your `~/.claude.json` or project `.claude/settings.json`:
 Or use the CLI:
 
 ```bash
-claude mcp add --transport sse jarvis http://localhost:8011/sse
+claude mcp add --transport sse jarvis http://localhost:7709/sse
 ```
 
 For Docker deployment (different host):
@@ -66,7 +66,7 @@ For Docker deployment (different host):
   "mcpServers": {
     "jarvis": {
       "type": "sse",
-      "url": "http://your-server:8011/sse"
+      "url": "http://your-server:7709/sse"
     }
   }
 }
@@ -102,12 +102,12 @@ For Docker deployment (different host):
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `JARVIS_MCP_HOST` | `localhost` | Host to bind to |
-| `JARVIS_MCP_PORT` | `8011` | Port to listen on |
+| `JARVIS_MCP_PORT` | `7709` | Port to listen on |
 | `JARVIS_MCP_TOOLS` | `logs,debug` | Comma-separated tool groups to enable |
-| `JARVIS_LOGS_URL` | `http://localhost:8006` | jarvis-logs server URL |
-| `JARVIS_AUTH_URL` | `http://localhost:8007` | jarvis-auth server URL |
-| `JARVIS_RECIPES_URL` | `http://localhost:8001` | jarvis-recipes server URL |
-| `JARVIS_COMMAND_CENTER_URL` | `http://localhost:8002` | jarvis-command-center URL |
+| `JARVIS_LOGS_URL` | `http://localhost:7702` | jarvis-logs server URL |
+| `JARVIS_AUTH_URL` | `http://localhost:7701` | jarvis-auth server URL |
+| `JARVIS_RECIPES_URL` | `http://localhost:7030` | jarvis-recipes server URL |
+| `JARVIS_COMMAND_CENTER_URL` | `http://localhost:7703` | jarvis-command-center URL |
 
 ### Docker Configuration
 
@@ -187,5 +187,5 @@ python -m jarvis_mcp
 docker build -t jarvis-mcp .
 
 # Run with Docker
-docker run -p 8011:8011 jarvis-mcp
+docker run -p 7709:7709 jarvis-mcp
 ```

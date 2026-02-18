@@ -156,8 +156,8 @@ class TestSettingsServiceEnvFallback:
         """Test that defaults are used when no env var is set."""
         with patch.dict(os.environ, {}, clear=True):
             result = service.get("server.port")
-            # Should return definition default (8011)
-            assert result == 8011
+            # Should return definition default (7709)
+            assert result == 7709
 
     def test_unknown_key_returns_none(self, service):
         """Test that unknown keys return None."""

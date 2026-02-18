@@ -70,8 +70,8 @@ class TestHandleHealthTool:
     async def test_routes_to_health_check(self, httpx_mock):
         """Test health_check routes correctly."""
         # Use specific services to avoid having to mock all 7 services
-        httpx_mock.add_response(url="http://localhost:8007/health", json={"status": "ok"})
-        httpx_mock.add_response(url="http://localhost:8006/health", json={"status": "ok"})
+        httpx_mock.add_response(url="http://localhost:7701/health", json={"status": "ok"})
+        httpx_mock.add_response(url="http://localhost:7702/health", json={"status": "ok"})
 
         result = await handle_health_tool("health_check", {"services": ["jarvis-auth", "jarvis-logs"]})
         assert len(result) == 1
@@ -82,7 +82,7 @@ class TestHandleHealthTool:
     async def test_routes_to_health_service(self, httpx_mock):
         """Test health_service routes correctly."""
         httpx_mock.add_response(
-            url="http://localhost:8007/health",
+            url="http://localhost:7701/health",
             json={"status": "ok"}
         )
 
@@ -104,10 +104,10 @@ class TestHealthCheck:
     async def test_check_all_services(self, httpx_mock):
         """Test checking multiple services."""
         # Test with specific services to verify counting logic
-        httpx_mock.add_response(url="http://localhost:8007/health", json={"status": "ok"})
-        httpx_mock.add_response(url="http://localhost:8002/api/v0/health", json={"status": "ok"})
-        httpx_mock.add_response(url="http://localhost:8006/health", json={"status": "ok"})
-        httpx_mock.add_response(url="http://localhost:8001/health", json={"status": "ok"})
+        httpx_mock.add_response(url="http://localhost:7701/health", json={"status": "ok"})
+        httpx_mock.add_response(url="http://localhost:7703/api/v0/health", json={"status": "ok"})
+        httpx_mock.add_response(url="http://localhost:7702/health", json={"status": "ok"})
+        httpx_mock.add_response(url="http://localhost:7030/health", json={"status": "ok"})
 
         result = await handle_health_tool("health_check", {
             "services": ["jarvis-auth", "jarvis-command-center", "jarvis-logs", "jarvis-recipes"]
@@ -117,8 +117,8 @@ class TestHealthCheck:
     @pytest.mark.asyncio
     async def test_check_specific_services(self, httpx_mock):
         """Test checking specific services only."""
-        httpx_mock.add_response(url="http://localhost:8007/health", json={"status": "ok"})
-        httpx_mock.add_response(url="http://localhost:8006/health", json={"status": "ok"})
+        httpx_mock.add_response(url="http://localhost:7701/health", json={"status": "ok"})
+        httpx_mock.add_response(url="http://localhost:7702/health", json={"status": "ok"})
 
         result = await handle_health_tool("health_check", {
             "services": ["jarvis-auth", "jarvis-logs"]
@@ -128,7 +128,7 @@ class TestHealthCheck:
     @pytest.mark.asyncio
     async def test_unhealthy_service(self, httpx_mock):
         """Test handling unhealthy service."""
-        httpx_mock.add_response(url="http://localhost:8007/health", status_code=500)
+        httpx_mock.add_response(url="http://localhost:7701/health", status_code=500)
 
         result = await handle_health_tool("health_check", {
             "services": ["jarvis-auth"]
@@ -152,7 +152,7 @@ class TestHealthService:
     async def test_check_single_service(self, httpx_mock):
         """Test checking a single service."""
         httpx_mock.add_response(
-            url="http://localhost:8002/api/v0/health",
+            url="http://localhost:7703/api/v0/health",
             json={"status": "healthy", "services": {"db": "ok"}}
         )
 

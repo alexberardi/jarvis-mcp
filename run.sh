@@ -35,7 +35,7 @@ else
     install_jarvis_clients config-client
 
     echo "Starting jarvis-mcp locally..."
-    echo "  Port: ${JARVIS_MCP_PORT:-8011}"
+    echo "  Port: ${JARVIS_MCP_PORT:-7709}"
     echo "  Tools: ${JARVIS_MCP_TOOLS:-logs,debug}"
     echo ""
     python3 -m jarvis_mcp

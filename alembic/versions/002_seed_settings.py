@@ -51,7 +51,7 @@ SETTINGS = [
     },
     {
         "key": "server.port",
-        "value": "8011",
+        "value": "7709",
         "value_type": "int",
         "category": "server",
         "description": "Server port",

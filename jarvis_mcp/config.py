@@ -23,20 +23,20 @@ class JarvisMcpConfig:
 
     # Server settings
     host: str = "localhost"
-    port: int = 8011
+    port: int = 7709
 
     # Tool groups to enable (comma-separated in env, or list)
     enabled_tools: set[str] = field(default_factory=lambda: {"logs", "debug", "health"})
 
     # Service URLs (populated from config service or defaults)
-    logs_url: str = "http://localhost:8006"
-    auth_url: str = "http://localhost:8007"
-    recipes_url: str = "http://localhost:8001"
-    command_center_url: str = "http://localhost:8002"
-    whisper_url: str = "http://localhost:8012"
-    tts_url: str = "http://localhost:8009"
-    ocr_url: str = "http://localhost:5009"
-    llm_proxy_url: str = "http://localhost:8000"
+    logs_url: str = "http://localhost:7702"
+    auth_url: str = "http://localhost:7701"
+    recipes_url: str = "http://localhost:7030"
+    command_center_url: str = "http://localhost:7703"
+    whisper_url: str = "http://localhost:7706"
+    tts_url: str = "http://localhost:7707"
+    ocr_url: str = "http://localhost:7031"
+    llm_proxy_url: str = "http://localhost:7704"
 
     # Database (PostgreSQL)
     postgres_host: str = "localhost"
@@ -79,7 +79,7 @@ class JarvisMcpConfig:
 
         return cls(
             host=os.getenv("JARVIS_MCP_HOST", "localhost"),
-            port=int(os.getenv("JARVIS_MCP_PORT", "8011")),
+            port=int(os.getenv("JARVIS_MCP_PORT", "7709")),
             enabled_tools=enabled_tools,
             app_id=os.getenv("JARVIS_APP_ID"),
             app_key=os.getenv("JARVIS_APP_KEY"),

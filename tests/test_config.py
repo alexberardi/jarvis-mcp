@@ -16,12 +16,12 @@ class TestJarvisMcpConfig:
         with patch.dict(os.environ, {}, clear=True):
             config = JarvisMcpConfig.from_env()
             assert config.host == "localhost"
-            assert config.port == 8011
+            assert config.port == 7709
             assert config.enabled_tools == {"logs", "debug"}
-            assert config.logs_url == "http://localhost:8006"
-            assert config.auth_url == "http://localhost:8007"
-            assert config.recipes_url == "http://localhost:8001"
-            assert config.command_center_url == "http://localhost:8002"
+            assert config.logs_url == "http://localhost:7702"
+            assert config.auth_url == "http://localhost:7701"
+            assert config.recipes_url == "http://localhost:7030"
+            assert config.command_center_url == "http://localhost:7703"
             assert config.app_id is None
             assert config.app_key is None
 

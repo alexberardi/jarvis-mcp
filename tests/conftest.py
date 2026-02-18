@@ -35,12 +35,12 @@ def test_env():
     """Set up test environment variables."""
     env_vars = {
         "JARVIS_MCP_HOST": "localhost",
-        "JARVIS_MCP_PORT": "8011",
+        "JARVIS_MCP_PORT": "7709",
         "JARVIS_MCP_TOOLS": "logs,debug",
-        "JARVIS_LOGS_URL": "http://localhost:8006",
-        "JARVIS_AUTH_URL": "http://localhost:8007",
-        "JARVIS_RECIPES_URL": "http://localhost:8001",
-        "JARVIS_COMMAND_CENTER_URL": "http://localhost:8002",
+        "JARVIS_LOGS_URL": "http://localhost:7702",
+        "JARVIS_AUTH_URL": "http://localhost:7701",
+        "JARVIS_RECIPES_URL": "http://localhost:7030",
+        "JARVIS_COMMAND_CENTER_URL": "http://localhost:7703",
         "JARVIS_APP_ID": "test-app",
         "JARVIS_APP_KEY": "test-key-12345",
     }

@@ -3,19 +3,19 @@ services:
     build: .
     container_name: jarvis-mcp
     ports:
-      - "${JARVIS_MCP_PORT:-8011}:${JARVIS_MCP_PORT:-8011}"
+      - "${JARVIS_MCP_PORT:-7709}:${JARVIS_MCP_PORT:-7709}"
     environment:
       - JARVIS_MCP_HOST=0.0.0.0
-      - JARVIS_MCP_PORT=${JARVIS_MCP_PORT:-8011}
+      - JARVIS_MCP_PORT=${JARVIS_MCP_PORT:-7709}
       - JARVIS_MCP_TOOLS=${JARVIS_MCP_TOOLS:-logs,debug}
       # Service discovery (preferred)
-      - JARVIS_CONFIG_URL=http://host.docker.internal:8013
+      - JARVIS_CONFIG_URL=http://host.docker.internal:7700
       - JARVIS_CONFIG_URL_STYLE=dockerized
       # Fallback URLs (only used if config service unavailable)
-      - JARVIS_LOGS_URL=${JARVIS_LOGS_URL:-http://host.docker.internal:8006}
-      - JARVIS_AUTH_URL=${JARVIS_AUTH_URL:-http://host.docker.internal:8007}
-      - JARVIS_RECIPES_URL=${JARVIS_RECIPES_URL:-http://host.docker.internal:8001}
-      - JARVIS_COMMAND_CENTER_URL=${JARVIS_COMMAND_CENTER_URL:-http://host.docker.internal:8002}
+      - JARVIS_LOGS_URL=${JARVIS_LOGS_URL:-http://host.docker.internal:7702}
+      - JARVIS_AUTH_URL=${JARVIS_AUTH_URL:-http://host.docker.internal:7701}
+      - JARVIS_RECIPES_URL=${JARVIS_RECIPES_URL:-http://host.docker.internal:7030}
+      - JARVIS_COMMAND_CENTER_URL=${JARVIS_COMMAND_CENTER_URL:-http://host.docker.internal:7703}
       - JARVIS_APP_ID=${JARVIS_APP_ID:-jarvis-mcp}
       - JARVIS_APP_KEY=${JARVIS_APP_KEY:-}
     extra_hosts:

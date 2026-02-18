@@ -27,7 +27,7 @@ Add to `~/.claude/settings.json`:
   "mcpServers": {
     "jarvis": {
       "type": "sse",
-      "url": "http://localhost:8011/sse"
+      "url": "http://localhost:7709/sse"
     }
   }
 }
@@ -50,12 +50,12 @@ jarvis_mcp/
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `JARVIS_MCP_HOST` | localhost | Server host |
-| `JARVIS_MCP_PORT` | 8011 | Server port |
+| `JARVIS_MCP_PORT` | 7709 | Server port |
 | `JARVIS_MCP_TOOLS` | logs,debug | Enabled tool groups |
 | `JARVIS_CONFIG_URL` | - | Config service URL (preferred) |
 | `JARVIS_CONFIG_URL_STYLE` | - | Set to `dockerized` in Docker |
-| `JARVIS_LOGS_URL` | http://localhost:8006 | Fallback: Logs service URL |
-| `JARVIS_AUTH_URL` | http://localhost:8007 | Fallback: Auth service URL |
+| `JARVIS_LOGS_URL` | http://localhost:7702 | Fallback: Logs service URL |
+| `JARVIS_AUTH_URL` | http://localhost:7701 | Fallback: Auth service URL |
 
 ## Service Discovery
 
@@ -92,9 +92,9 @@ For Docker: Set `JARVIS_CONFIG_URL_STYLE=dockerized` to get `host.docker.interna
 - httpx
 
 **Service Dependencies:**
-- ✅ **Required**: `jarvis-config-service` (8013) - Service discovery (preferred)
-- ⚠️ **Optional**: `jarvis-logs` (8006) - Log querying tools
-- ⚠️ **Optional**: `jarvis-auth` (8007) - Health checks and service info
+- ✅ **Required**: `jarvis-config-service` (7700) - Service discovery (preferred)
+- ⚠️ **Optional**: `jarvis-logs` (7702) - Log querying tools
+- ⚠️ **Optional**: `jarvis-auth` (7701) - Health checks and service info
 - Fallback to env vars if config-service unavailable
 
 **Used By:**

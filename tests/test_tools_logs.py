@@ -68,11 +68,11 @@ class TestHandleLogsTool:
     async def test_routes_to_logs_query(self, httpx_mock: HTTPXMock):
         """Test routing to logs_query."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {}
 
             httpx_mock.add_response(
-                url=re.compile(r"http://test:8006/api/v0/logs.*"),
+                url=re.compile(r"http://test:7702/api/v0/logs.*"),
                 json=[],
             )
 
@@ -83,11 +83,11 @@ class TestHandleLogsTool:
     async def test_routes_to_logs_tail(self, httpx_mock: HTTPXMock):
         """Test routing to logs_tail."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {}
 
             httpx_mock.add_response(
-                url=re.compile(r"http://test:8006/api/v0/logs.*"),
+                url=re.compile(r"http://test:7702/api/v0/logs.*"),
                 json=[],
             )
 
@@ -98,11 +98,11 @@ class TestHandleLogsTool:
     async def test_routes_to_logs_errors(self, httpx_mock: HTTPXMock):
         """Test routing to logs_errors."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {}
 
             httpx_mock.add_response(
-                url=re.compile(r"http://test:8006/api/v0/logs.*"),
+                url=re.compile(r"http://test:7702/api/v0/logs.*"),
                 json=[],
             )
 
@@ -113,11 +113,11 @@ class TestHandleLogsTool:
     async def test_routes_to_logs_services(self, httpx_mock: HTTPXMock):
         """Test routing to logs_services."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {}
 
             httpx_mock.add_response(
-                url="http://test:8006/api/v0/services",
+                url="http://test:7702/api/v0/services",
                 json=["svc1", "svc2"],
             )
 
@@ -138,11 +138,11 @@ class TestLogsQuery:
     async def test_query_with_filters(self, httpx_mock: HTTPXMock):
         """Test query passes filters correctly."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {"X-Jarvis-App-Id": "test"}
 
             httpx_mock.add_response(
-                url=re.compile(r"http://test:8006/api/v0/logs.*"),
+                url=re.compile(r"http://test:7702/api/v0/logs.*"),
                 json=[
                     {
                         "timestamp": "2024-01-15T12:00:00",
@@ -168,14 +168,14 @@ class TestLogsQuery:
     async def test_query_includes_auth_headers(self, httpx_mock: HTTPXMock):
         """Test query includes auth headers."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {
                 "X-Jarvis-App-Id": "my-app",
                 "X-Jarvis-App-Key": "my-key",
             }
 
             httpx_mock.add_response(
-                url=re.compile(r"http://test:8006/api/v0/logs.*"),
+                url=re.compile(r"http://test:7702/api/v0/logs.*"),
                 json=[],
             )
 
@@ -191,7 +191,7 @@ class TestLogsQuery:
         import httpx
 
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {}
 
             httpx_mock.add_exception(httpx.ConnectError("Connection refused"))
@@ -203,11 +203,11 @@ class TestLogsQuery:
     async def test_query_http_error(self, httpx_mock: HTTPXMock):
         """Test handling HTTP errors."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {}
 
             httpx_mock.add_response(
-                url=re.compile(r"http://test:8006/api/v0/logs.*"),
+                url=re.compile(r"http://test:7702/api/v0/logs.*"),
                 status_code=500,
             )
 
@@ -218,11 +218,11 @@ class TestLogsQuery:
     async def test_query_limit_capped(self, httpx_mock: HTTPXMock):
         """Test that limit is capped at 200."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {}
 
             httpx_mock.add_response(
-                url=re.compile(r"http://test:8006/api/v0/logs.*"),
+                url=re.compile(r"http://test:7702/api/v0/logs.*"),
                 json=[],
             )
 
@@ -239,11 +239,11 @@ class TestLogsTail:
     async def test_tail_with_service(self, httpx_mock: HTTPXMock):
         """Test tail with service parameter."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {}
 
             httpx_mock.add_response(
-                url=re.compile(r"http://test:8006/api/v0/logs.*"),
+                url=re.compile(r"http://test:7702/api/v0/logs.*"),
                 json=[
                     {
                         "timestamp": "2024-01-15T12:00:00",
@@ -265,11 +265,11 @@ class TestLogsTail:
     async def test_tail_lines_capped(self, httpx_mock: HTTPXMock):
         """Test that lines is capped at 100."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {}
 
             httpx_mock.add_response(
-                url=re.compile(r"http://test:8006/api/v0/logs.*"),
+                url=re.compile(r"http://test:7702/api/v0/logs.*"),
                 json=[],
             )
 
@@ -286,11 +286,11 @@ class TestLogsErrors:
     async def test_errors_queries_error_level(self, httpx_mock: HTTPXMock):
         """Test that errors queries ERROR level."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {}
 
             httpx_mock.add_response(
-                url=re.compile(r"http://test:8006/api/v0/logs.*"),
+                url=re.compile(r"http://test:7702/api/v0/logs.*"),
                 json=[],
             )
 
@@ -304,11 +304,11 @@ class TestLogsErrors:
     async def test_errors_with_service_filter(self, httpx_mock: HTTPXMock):
         """Test errors with service filter."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {}
 
             httpx_mock.add_response(
-                url=re.compile(r"http://test:8006/api/v0/logs.*"),
+                url=re.compile(r"http://test:7702/api/v0/logs.*"),
                 json=[
                     {
                         "timestamp": "2024-01-15T12:00:00",
@@ -334,11 +334,11 @@ class TestLogsServices:
     async def test_services_returns_list(self, httpx_mock: HTTPXMock):
         """Test services returns formatted list."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {}
 
             httpx_mock.add_response(
-                url="http://test:8006/api/v0/services",
+                url="http://test:7702/api/v0/services",
                 json=["svc1", "svc2", "svc3"],
             )
 
@@ -352,11 +352,11 @@ class TestLogsServices:
     async def test_services_empty(self, httpx_mock: HTTPXMock):
         """Test services when none exist."""
         with patch("jarvis_mcp.tools.logs.config") as mock_config:
-            mock_config.logs_url = "http://test:8006"
+            mock_config.logs_url = "http://test:7702"
             mock_config.get_auth_headers.return_value = {}
 
             httpx_mock.add_response(
-                url="http://test:8006/api/v0/services",
+                url="http://test:7702/api/v0/services",
                 json=[],
             )
 

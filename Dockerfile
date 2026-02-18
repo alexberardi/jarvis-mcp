@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /
 RUN pip install --no-cache-dir -e .
 
 ENV JARVIS_MCP_HOST=0.0.0.0
-ENV JARVIS_MCP_PORT=8011
+ENV JARVIS_MCP_PORT=7709
 
 EXPOSE ${JARVIS_MCP_PORT}
 

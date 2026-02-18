@@ -66,11 +66,11 @@ class TestHandleDebugTool:
     async def test_routes_to_debug_health(self, httpx_mock: HTTPXMock):
         """Test routing to debug_health."""
         with patch("jarvis_mcp.tools.debug.config") as mock_config:
-            mock_config.logs_url = "http://logs:8006"
-            mock_config.auth_url = "http://auth:8007"
+            mock_config.logs_url = "http://logs:7702"
+            mock_config.auth_url = "http://auth:7701"
 
-            httpx_mock.add_response(url="http://logs:8006/health", status_code=200)
-            httpx_mock.add_response(url="http://auth:8007/health", status_code=200)
+            httpx_mock.add_response(url="http://logs:7702/health", status_code=200)
+            httpx_mock.add_response(url="http://auth:7701/health", status_code=200)
 
             # Use specific services to avoid mocking all 7 services
             result = await handle_debug_tool("debug_health", {"services": ["logs", "auth"]})
@@ -80,10 +80,10 @@ class TestHandleDebugTool:
     async def test_routes_to_debug_service_info(self, httpx_mock: HTTPXMock):
         """Test routing to debug_service_info."""
         with patch("jarvis_mcp.tools.debug.config") as mock_config:
-            mock_config.logs_url = "http://logs:8006"
+            mock_config.logs_url = "http://logs:7702"
 
             httpx_mock.add_response(
-                url="http://logs:8006/health",
+                url="http://logs:7702/health",
                 status_code=200,
                 json={"status": "healthy"},
             )
@@ -105,15 +105,15 @@ class TestDebugHealth:
     async def test_health_all_up(self, httpx_mock: HTTPXMock):
         """Test health check when specified services are up."""
         with patch("jarvis_mcp.tools.debug.config") as mock_config:
-            mock_config.logs_url = "http://logs:8006"
-            mock_config.auth_url = "http://auth:8007"
-            mock_config.recipes_url = "http://recipes:8001"
-            mock_config.command_center_url = "http://cc:8002"
+            mock_config.logs_url = "http://logs:7702"
+            mock_config.auth_url = "http://auth:7701"
+            mock_config.recipes_url = "http://recipes:7030"
+            mock_config.command_center_url = "http://cc:7703"
 
-            httpx_mock.add_response(url="http://logs:8006/health", status_code=200)
-            httpx_mock.add_response(url="http://auth:8007/health", status_code=200)
-            httpx_mock.add_response(url="http://recipes:8001/health", status_code=200)
-            httpx_mock.add_response(url="http://cc:8002/health", status_code=200)
+            httpx_mock.add_response(url="http://logs:7702/health", status_code=200)
+            httpx_mock.add_response(url="http://auth:7701/health", status_code=200)
+            httpx_mock.add_response(url="http://recipes:7030/health", status_code=200)
+            httpx_mock.add_response(url="http://cc:7703/health", status_code=200)
 
             # Check specific services to avoid mocking all 7 services
             result = await handle_debug_tool("debug_health", {
@@ -131,15 +131,15 @@ class TestDebugHealth:
         import httpx
 
         with patch("jarvis_mcp.tools.debug.config") as mock_config:
-            mock_config.logs_url = "http://logs:8006"
-            mock_config.auth_url = "http://auth:8007"
-            mock_config.recipes_url = "http://recipes:8001"
-            mock_config.command_center_url = "http://cc:8002"
+            mock_config.logs_url = "http://logs:7702"
+            mock_config.auth_url = "http://auth:7701"
+            mock_config.recipes_url = "http://recipes:7030"
+            mock_config.command_center_url = "http://cc:7703"
 
-            httpx_mock.add_response(url="http://logs:8006/health", status_code=200)
-            httpx_mock.add_exception(httpx.ConnectError("Connection refused"), url="http://auth:8007/health")
-            httpx_mock.add_response(url="http://recipes:8001/health", status_code=500)
-            httpx_mock.add_response(url="http://cc:8002/health", status_code=200)
+            httpx_mock.add_response(url="http://logs:7702/health", status_code=200)
+            httpx_mock.add_exception(httpx.ConnectError("Connection refused"), url="http://auth:7701/health")
+            httpx_mock.add_response(url="http://recipes:7030/health", status_code=500)
+            httpx_mock.add_response(url="http://cc:7703/health", status_code=200)
 
             # Check specific services to avoid mocking all 7 services
             result = await handle_debug_tool("debug_health", {
@@ -155,11 +155,11 @@ class TestDebugHealth:
     async def test_health_specific_services(self, httpx_mock: HTTPXMock):
         """Test health check for specific services."""
         with patch("jarvis_mcp.tools.debug.config") as mock_config:
-            mock_config.logs_url = "http://logs:8006"
-            mock_config.auth_url = "http://auth:8007"
+            mock_config.logs_url = "http://logs:7702"
+            mock_config.auth_url = "http://auth:7701"
 
-            httpx_mock.add_response(url="http://logs:8006/health", status_code=200)
-            httpx_mock.add_response(url="http://auth:8007/health", status_code=200)
+            httpx_mock.add_response(url="http://logs:7702/health", status_code=200)
+            httpx_mock.add_response(url="http://auth:7701/health", status_code=200)
 
             result = await handle_debug_tool("debug_health", {"services": ["logs", "auth"]})
 
@@ -183,10 +183,10 @@ class TestDebugServiceInfo:
     async def test_service_info_success(self, httpx_mock: HTTPXMock):
         """Test getting service info successfully."""
         with patch("jarvis_mcp.tools.debug.config") as mock_config:
-            mock_config.logs_url = "http://logs:8006"
+            mock_config.logs_url = "http://logs:7702"
 
             httpx_mock.add_response(
-                url="http://logs:8006/health",
+                url="http://logs:7702/health",
                 status_code=200,
                 json={
                     "status": "healthy",
@@ -198,7 +198,7 @@ class TestDebugServiceInfo:
             result = await handle_debug_tool("debug_service_info", {"service": "logs"})
 
             assert "logs" in result[0].text
-            assert "http://logs:8006" in result[0].text
+            assert "http://logs:7702" in result[0].text
             assert "healthy" in result[0].text
             assert "loki" in result[0].text
 
@@ -208,7 +208,7 @@ class TestDebugServiceInfo:
         import httpx
 
         with patch("jarvis_mcp.tools.debug.config") as mock_config:
-            mock_config.auth_url = "http://auth:8007"
+            mock_config.auth_url = "http://auth:7701"
 
             httpx_mock.add_exception(httpx.ConnectError("Connection refused"))
 
@@ -227,10 +227,10 @@ class TestDebugServiceInfo:
     async def test_service_info_non_json_response(self, httpx_mock: HTTPXMock):
         """Test service info when health returns non-JSON."""
         with patch("jarvis_mcp.tools.debug.config") as mock_config:
-            mock_config.recipes_url = "http://recipes:8001"
+            mock_config.recipes_url = "http://recipes:7030"
 
             httpx_mock.add_response(
-                url="http://recipes:8001/health",
+                url="http://recipes:7030/health",
                 status_code=200,
                 text="OK",
             )
@@ -245,10 +245,10 @@ class TestDebugServiceInfo:
     async def test_service_info_shows_nested_health(self, httpx_mock: HTTPXMock):
         """Test that nested health data is displayed."""
         with patch("jarvis_mcp.tools.debug.config") as mock_config:
-            mock_config.logs_url = "http://logs:8006"
+            mock_config.logs_url = "http://logs:7702"
 
             httpx_mock.add_response(
-                url="http://logs:8006/health",
+                url="http://logs:7702/health",
                 status_code=200,
                 json={
                     "status": "healthy",
