@@ -17,7 +17,7 @@ class TestJarvisMcpConfig:
             config = JarvisMcpConfig.from_env()
             assert config.host == "localhost"
             assert config.port == 7709
-            assert config.enabled_tools == {"logs", "debug"}
+            assert config.enabled_tools == {"logs", "debug", "health", "datetime", "math", "conversion", "command"}
             assert config.logs_url == "http://localhost:7702"
             assert config.auth_url == "http://localhost:7701"
             assert config.recipes_url == "http://localhost:7030"

@@ -10,6 +10,10 @@ from jarvis_mcp.tools.debug import DEBUG_TOOLS, handle_debug_tool
 from jarvis_mcp.tools.health import HEALTH_TOOLS, handle_health_tool
 from jarvis_mcp.tools.tests import TESTS_TOOLS, handle_tests_tool
 from jarvis_mcp.tools.database import DB_TOOLS, handle_db_tool
+from jarvis_mcp.tools.datetime import DATETIME_TOOLS, handle_datetime_tool
+from jarvis_mcp.tools.math import MATH_TOOLS, handle_math_tool
+from jarvis_mcp.tools.conversion import CONVERSION_TOOLS, handle_conversion_tool
+from jarvis_mcp.tools.command import COMMAND_TOOLS, handle_command_tool
 
 logger = logging.getLogger(__name__)
 
@@ -41,11 +45,21 @@ def get_enabled_tools() -> list[Tool]:
         tools.extend(DB_TOOLS)
         logger.info("Enabled tool group: db (%d tools)", len(DB_TOOLS))
 
-    # Future tool groups can be added here:
-    # if config.is_enabled("recipes"):
-    #     tools.extend(RECIPES_TOOLS)
-    # if config.is_enabled("auth"):
-    #     tools.extend(AUTH_TOOLS)
+    if config.is_enabled("datetime"):
+        tools.extend(DATETIME_TOOLS)
+        logger.info("Enabled tool group: datetime (%d tools)", len(DATETIME_TOOLS))
+
+    if config.is_enabled("math"):
+        tools.extend(MATH_TOOLS)
+        logger.info("Enabled tool group: math (%d tools)", len(MATH_TOOLS))
+
+    if config.is_enabled("conversion"):
+        tools.extend(CONVERSION_TOOLS)
+        logger.info("Enabled tool group: conversion (%d tools)", len(CONVERSION_TOOLS))
+
+    if config.is_enabled("command"):
+        tools.extend(COMMAND_TOOLS)
+        logger.info("Enabled tool group: command (%d tools)", len(COMMAND_TOOLS))
 
     return tools
 
@@ -87,11 +101,25 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
             return [TextContent(type="text", text="DB tools are not enabled")]
         return await handle_db_tool(name, arguments)
 
-    # Future handlers:
-    # elif name.startswith("recipes_"):
-    #     return await handle_recipes_tool(name, arguments)
-    # elif name.startswith("auth_"):
-    #     return await handle_auth_tool(name, arguments)
+    elif name.startswith("datetime_"):
+        if not config.is_enabled("datetime"):
+            return [TextContent(type="text", text="Datetime tools are not enabled")]
+        return await handle_datetime_tool(name, arguments)
+
+    elif name.startswith("math_"):
+        if not config.is_enabled("math"):
+            return [TextContent(type="text", text="Math tools are not enabled")]
+        return await handle_math_tool(name, arguments)
+
+    elif name.startswith("unit_"):
+        if not config.is_enabled("conversion"):
+            return [TextContent(type="text", text="Conversion tools are not enabled")]
+        return await handle_conversion_tool(name, arguments)
+
+    elif name.startswith("command_"):
+        if not config.is_enabled("command"):
+            return [TextContent(type="text", text="Command tools are not enabled")]
+        return await handle_command_tool(name, arguments)
 
     else:
         return [TextContent(type="text", text=f"Unknown tool: {name}")]
