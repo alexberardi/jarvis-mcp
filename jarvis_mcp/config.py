@@ -26,7 +26,10 @@ class JarvisMcpConfig:
     port: int = 7709
 
     # Tool groups to enable (comma-separated in env, or list)
-    enabled_tools: set[str] = field(default_factory=lambda: {"logs", "debug", "health", "datetime", "math", "conversion", "command"})
+    enabled_tools: set[str] = field(default_factory=lambda: {"logs", "debug", "health", "datetime", "math", "conversion", "command", "docker"})
+
+    # Jarvis root directory (for discovering service compose files)
+    jarvis_root: str = "/Users/alexanderberardi/jarvis"
 
     # Service URLs (populated from config service or defaults)
     logs_url: str = "http://localhost:7702"
@@ -55,7 +58,7 @@ class JarvisMcpConfig:
     @classmethod
     def from_env(cls) -> "JarvisMcpConfig":
         """Load configuration from environment variables."""
-        tools_str = os.getenv("JARVIS_MCP_TOOLS", "logs,debug,health,datetime,math,conversion,command")
+        tools_str = os.getenv("JARVIS_MCP_TOOLS", "logs,debug,health,datetime,math,conversion,command,docker")
         enabled_tools = {t.strip() for t in tools_str.split(",") if t.strip()}
 
         # Map env var names to config attribute names for service URLs
@@ -81,6 +84,7 @@ class JarvisMcpConfig:
             host=os.getenv("JARVIS_MCP_HOST", "localhost"),
             port=int(os.getenv("JARVIS_MCP_PORT", "7709")),
             enabled_tools=enabled_tools,
+            jarvis_root=os.getenv("JARVIS_ROOT", "/Users/alexanderberardi/jarvis"),
             app_id=os.getenv("JARVIS_APP_ID"),
             app_key=os.getenv("JARVIS_APP_KEY"),
             postgres_host=os.getenv("POSTGRES_HOST", "localhost"),

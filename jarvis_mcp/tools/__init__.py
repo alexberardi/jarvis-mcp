@@ -6,6 +6,7 @@ from jarvis_mcp.tools.datetime import DATETIME_TOOLS, handle_datetime_tool
 from jarvis_mcp.tools.math import MATH_TOOLS, handle_math_tool
 from jarvis_mcp.tools.conversion import CONVERSION_TOOLS, handle_conversion_tool
 from jarvis_mcp.tools.command import COMMAND_TOOLS, handle_command_tool
+from jarvis_mcp.tools.docker import DOCKER_TOOLS, handle_docker_tool
 
 __all__ = [
     "LOGS_TOOLS",
@@ -24,4 +25,6 @@ __all__ = [
     "handle_conversion_tool",
     "COMMAND_TOOLS",
     "handle_command_tool",
+    "DOCKER_TOOLS",
+    "handle_docker_tool",
 ]

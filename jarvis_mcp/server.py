@@ -14,6 +14,7 @@ from jarvis_mcp.tools.datetime import DATETIME_TOOLS, handle_datetime_tool
 from jarvis_mcp.tools.math import MATH_TOOLS, handle_math_tool
 from jarvis_mcp.tools.conversion import CONVERSION_TOOLS, handle_conversion_tool
 from jarvis_mcp.tools.command import COMMAND_TOOLS, handle_command_tool
+from jarvis_mcp.tools.docker import DOCKER_TOOLS, handle_docker_tool
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +61,10 @@ def get_enabled_tools() -> list[Tool]:
     if config.is_enabled("command"):
         tools.extend(COMMAND_TOOLS)
         logger.info("Enabled tool group: command (%d tools)", len(COMMAND_TOOLS))
+
+    if config.is_enabled("docker"):
+        tools.extend(DOCKER_TOOLS)
+        logger.info("Enabled tool group: docker (%d tools)", len(DOCKER_TOOLS))
 
     return tools
 
@@ -120,6 +125,11 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
         if not config.is_enabled("command"):
             return [TextContent(type="text", text="Command tools are not enabled")]
         return await handle_command_tool(name, arguments)
+
+    elif name.startswith("docker_"):
+        if not config.is_enabled("docker"):
+            return [TextContent(type="text", text="Docker tools are not enabled")]
+        return await handle_docker_tool(name, arguments)
 
     else:
         return [TextContent(type="text", text=f"Unknown tool: {name}")]

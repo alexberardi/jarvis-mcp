@@ -23,6 +23,7 @@ dependencies = [
     "alembic>=1.12.1",
     "psycopg2-binary>=2.9.9",
     "jarvis-settings-client @ git+https://github.com/alexberardi/jarvis-settings-client.git@main",
+    "docker>=7.0.0",
 ]
 
 [project.optional-dependencies]

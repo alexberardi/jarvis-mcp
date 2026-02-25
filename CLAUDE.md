@@ -37,12 +37,28 @@ Add to `~/.claude/settings.json`:
 
 ```
 jarvis_mcp/
-├── __main__.py    # Entry point
-├── server.py      # SSE server, MCP protocol
-├── config.py      # Environment configuration
+├── __main__.py        # Entry point
+├── server.py          # SSE server, MCP protocol, tool routing
+├── config.py          # Environment configuration
+├── services/
+│   ├── command_service.py      # E2E command testing via JCC
+│   ├── command_definitions.py  # Built-in test cases
+│   ├── conversion_service.py   # Unit conversion logic
+│   ├── datetime_service.py     # Date/time resolution
+│   ├── docker_service.py       # Docker container management
+│   ├── math_service.py         # Math evaluation
+│   └── settings_*.py           # Settings service
 └── tools/
-    ├── logs.py    # logs_query, logs_tail, logs_errors, logs_services
-    └── debug.py   # debug_health, debug_service_info
+    ├── logs.py        # logs_query, logs_tail, logs_errors, logs_services
+    ├── debug.py       # debug_health, debug_service_info
+    ├── health.py      # health_check, health_service
+    ├── database.py    # db_list_databases, db_query, etc.
+    ├── datetime.py    # datetime_resolve, datetime_context
+    ├── math.py        # math_evaluate
+    ├── conversion.py  # unit_convert
+    ├── command.py     # command_test, command_test_suite, command_test_list
+    ├── docker.py      # docker_ps, docker_logs, docker_restart, etc.
+    └── tests.py       # run_tests
 ```
 
 ## Environment Variables
@@ -51,7 +67,8 @@ jarvis_mcp/
 |----------|---------|-------------|
 | `JARVIS_MCP_HOST` | localhost | Server host |
 | `JARVIS_MCP_PORT` | 7709 | Server port |
-| `JARVIS_MCP_TOOLS` | logs,debug | Enabled tool groups |
+| `JARVIS_MCP_TOOLS` | logs,debug,health,datetime,math,conversion,command,docker | Enabled tool groups |
+| `JARVIS_ROOT` | /Users/alexanderberardi/jarvis | Root dir for compose file discovery |
 | `JARVIS_CONFIG_URL` | - | Config service URL (preferred) |
 | `JARVIS_CONFIG_URL_STYLE` | - | Set to `dockerized` in Docker |
 | `JARVIS_LOGS_URL` | http://localhost:7702 | Fallback: Logs service URL |
@@ -78,6 +95,45 @@ For Docker: Set `JARVIS_CONFIG_URL_STYLE=dockerized` to get `host.docker.interna
 - `debug_health` → Check service health
 - `debug_service_info` → Get service details
 
+**Health:**
+- `health_check` → Check health of all/specific services
+- `health_service` → Detailed health for one service
+
+**Database (read-only):**
+- `db_list_databases` → List PostgreSQL databases
+- `db_list_schemas` → List schemas
+- `db_list_tables` → List tables
+- `db_describe_table` → Describe columns
+- `db_query` → Run read-only SELECT queries
+
+**Datetime:**
+- `datetime_resolve` → Resolve relative dates ("tomorrow morning" → ISO)
+- `datetime_context` → Get current date/time context
+
+**Math:**
+- `math_evaluate` → Evaluate math expressions
+
+**Conversion:**
+- `unit_convert` → Convert units (temperature, weight, volume, length)
+
+**Command Testing:**
+- `command_test` → Test a single voice command through JCC pipeline
+- `command_test_suite` → Run batch of command tests with validation
+- `command_test_list` → List built-in test cases
+
+**Docker:**
+- `docker_ps` → List jarvis containers (name, status, image, ports)
+- `docker_logs` → Get recent logs from a container (partial name match)
+- `docker_restart` → Restart a container
+- `docker_stop` → Stop a running container
+- `docker_start` → Start a stopped container
+- `docker_compose_up` → `docker compose up -d` for a jarvis service
+- `docker_compose_down` → `docker compose down` for a jarvis service
+- `docker_compose_list` → List services with compose files
+
+**Tests:**
+- `run_tests` → Run pytest for a service
+
 ## API Endpoints
 
 - `GET /health` → Health check (returns JSON with status, enabled tools, service discovery state)
@@ -90,6 +146,7 @@ For Docker: Set `JARVIS_CONFIG_URL_STYLE=dockerized` to get `host.docker.interna
 - mcp (Model Context Protocol)
 - starlette, sse-starlette
 - httpx
+- docker (Docker SDK for Python)
 
 **Service Dependencies:**
 - ✅ **Required**: `jarvis-config-service` (7700) - Service discovery (preferred)
