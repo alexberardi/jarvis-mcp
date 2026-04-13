@@ -53,7 +53,7 @@ COMMAND_TOOLS: list[Tool] = [
                     "description": (
                         "Filter built-in tests by category. "
                         "Options: weather, calendar, knowledge, search, jokes, "
-                        "calculator, sports, timers. Omit for all."
+                        "calculator, sports, timers, bluetooth. Omit for all."
                     ),
                 },
                 "timezone": {

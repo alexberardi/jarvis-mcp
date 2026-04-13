@@ -488,6 +488,70 @@ DEFAULT_AVAILABLE_COMMANDS: list[dict[str, Any]] = [
             },
         ],
     },
+    {
+        "command_name": "bluetooth",
+        "description": (
+            "Manage Bluetooth connections: scan for nearby devices, "
+            "pair phones or speakers, connect, disconnect, or check status."
+        ),
+        "allow_direct_answer": False,
+        "parameters": [
+            {
+                "name": "action",
+                "type": "string",
+                "required": True,
+                "description": "The Bluetooth action to perform.",
+                "enum_values": ["scan", "pair", "connect", "disconnect", "forget", "status"],
+            },
+            {
+                "name": "device_name",
+                "type": "string",
+                "required": False,
+                "description": "Name or partial name of the Bluetooth device (e.g. 'JBL', 'iPhone').",
+            },
+            {
+                "name": "role",
+                "type": "string",
+                "required": False,
+                "description": (
+                    "How to use this device: 'speaker' (Pi sends audio to it), "
+                    "'phone' (receive audio from it), or 'bridge' (phone → Pi → speaker)."
+                ),
+                "enum_values": ["speaker", "phone", "bridge"],
+            },
+        ],
+        "keywords": [
+            "bluetooth", "pair", "connect", "disconnect",
+            "speaker", "discoverable", "unpair", "forget",
+        ],
+        "examples": [
+            {
+                "voice_command": "Pair my phone",
+                "expected_parameters": {"action": "pair", "role": "phone"},
+                "is_primary": True,
+            },
+            {
+                "voice_command": "What Bluetooth devices are nearby?",
+                "expected_parameters": {"action": "scan"},
+                "is_primary": False,
+            },
+            {
+                "voice_command": "Connect to the JBL speaker",
+                "expected_parameters": {"action": "connect", "device_name": "JBL", "role": "speaker"},
+                "is_primary": False,
+            },
+            {
+                "voice_command": "Bluetooth status",
+                "expected_parameters": {"action": "status"},
+                "is_primary": False,
+            },
+        ],
+        "critical_rules": [
+            "For 'pair my phone', use action='pair' role='phone'.",
+            "For 'connect to the <speaker name>', use action='connect' device_name='<speaker name>' role='speaker'.",
+            "If no role specified, default: phones → 'phone', speakers/audio → 'speaker'.",
+        ],
+    },
 ]
 
 
@@ -1005,5 +1069,48 @@ BUILTIN_TEST_CASES: list[dict[str, Any]] = [
         "expected_command": "set_timer",
         "expected_params": {"duration_seconds": 1800},
         "description": "Casual: 'wake me up' phrasing",
+    },
+    # ===== BLUETOOTH (6 tests) =====
+    {
+        "category": "bluetooth",
+        "voice_command": "Pair my phone",
+        "expected_command": "bluetooth",
+        "expected_params": {"action": "pair", "role": "phone"},
+        "description": "Pair phone via Bluetooth",
+    },
+    {
+        "category": "bluetooth",
+        "voice_command": "Scan for Bluetooth devices",
+        "expected_command": "bluetooth",
+        "expected_params": {"action": "scan"},
+        "description": "Scan for nearby devices",
+    },
+    {
+        "category": "bluetooth",
+        "voice_command": "Connect to the JBL speaker",
+        "expected_command": "bluetooth",
+        "expected_params": {"action": "connect", "device_name": "JBL", "role": "speaker"},
+        "description": "Connect to a named speaker",
+    },
+    {
+        "category": "bluetooth",
+        "voice_command": "Disconnect my phone",
+        "expected_command": "bluetooth",
+        "expected_params": {"action": "disconnect"},
+        "description": "Disconnect a device",
+    },
+    {
+        "category": "bluetooth",
+        "voice_command": "Bluetooth status",
+        "expected_command": "bluetooth",
+        "expected_params": {"action": "status"},
+        "description": "Check Bluetooth status",
+    },
+    {
+        "category": "bluetooth",
+        "voice_command": "Forget the JBL speaker",
+        "expected_command": "bluetooth",
+        "expected_params": {"action": "forget", "device_name": "JBL"},
+        "description": "Forget/unpair a device",
     },
 ]
