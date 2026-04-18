@@ -22,7 +22,7 @@ dependencies = [
     "sqlalchemy>=2.0.23",
     "alembic>=1.12.1",
     "psycopg2-binary>=2.9.9",
-    "jarvis-settings-client @ git+https://github.com/alexberardi/jarvis-settings-client.git@main",
+    "jarvis-settings-client @ git+https://github.com/alexberardi/jarvis-settings-client.git@9902feb",
     "docker>=7.0.0",
 ]
 
