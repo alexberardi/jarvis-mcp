@@ -1,163 +1,95 @@
 # jarvis-mcp
 
-MCP (Model Context Protocol) server exposing jarvis services as tools for Claude Code.
+> **⚠️ Potentially deprecated — do not extend.**
+>
+> The MCP surface is still **actively used** today (Claude Code integration + command-center optional tool injection via `jarvis-mcp-client`), but the architecture is under review. **Don't pour effort into adding new tools or extending this service.** If you need to expose new capabilities to Claude Code or to the LLM, raise the question before working here.
+>
+> Existing tools continue to work; the deprecation note is forward-looking.
+
+---
+
+## What it is
+
+A SSE-based MCP (Model Context Protocol) server exposing jarvis service capabilities as tools. Two consumers:
+
+1. **Claude Code** — connects via `~/.claude/settings.json` MCP config; gives the developer (you) access to ~30 tools: `query_logs`, `debug_health`, `docker_ps`, `db_query`, `datetime_resolve`, `command_test`, etc.
+2. **command-center** — optionally connects via `jarvis-mcp-client` at startup (`JARVIS_MCP_URL`); if connected, surfaces MCP tools as LLM-callable tools in the voice pipeline. Non-fatal if unavailable.
+
+Port: **7709**.
 
 ## Quick Reference
 
 ```bash
-# Setup
-python3 -m venv .venv
-.venv/bin/pip install -e ".[dev]"
-
 # Run
 .venv/bin/python -m jarvis_mcp
 
-# Or with Docker
+# Or Docker
 docker-compose up -d
 
 # Test
 .venv/bin/pytest
 ```
 
-## Claude Code Integration
-
-Add to `~/.claude/settings.json`:
+Claude Code config:
 ```json
 {
   "mcpServers": {
-    "jarvis": {
-      "type": "sse",
-      "url": "http://localhost:7709/sse"
-    }
+    "jarvis": { "type": "sse", "url": "http://localhost:7709/sse" }
   }
 }
 ```
 
-## Architecture
+## Tool inventory (for triage / discovery)
 
-```
-jarvis_mcp/
-├── __main__.py        # Entry point
-├── server.py          # SSE server, MCP protocol, tool routing
-├── config.py          # Environment configuration
-├── services/
-│   ├── command_service.py      # E2E command testing via JCC
-│   ├── command_definitions.py  # Built-in test cases
-│   ├── conversion_service.py   # Unit conversion logic
-│   ├── datetime_service.py     # Date/time resolution
-│   ├── docker_service.py       # Docker container management
-│   ├── math_service.py         # Math evaluation
-│   └── settings_*.py           # Settings service
-└── tools/
-    ├── logs.py        # logs_query, logs_tail, logs_errors, logs_services
-    ├── debug.py       # debug_health, debug_service_info
-    ├── health.py      # health_check, health_service
-    ├── database.py    # db_list_databases, db_query, etc.
-    ├── datetime.py    # datetime_resolve, datetime_context
-    ├── math.py        # math_evaluate
-    ├── conversion.py  # unit_convert
-    ├── command.py     # command_test, command_test_suite, command_test_list
-    ├── docker.py      # docker_ps, docker_logs, docker_restart, etc.
-    └── tests.py       # run_tests
-```
+| Group | Tools |
+|---|---|
+| **Logs** | `logs_query`, `logs_tail`, `logs_errors`, `logs_services` |
+| **Debug** | `debug_health`, `debug_service_info` |
+| **Health** | `health_check`, `health_service` |
+| **Database** (read-only) | `db_list_databases`, `db_list_schemas`, `db_list_tables`, `db_describe_table`, `db_query` |
+| **Datetime** | `datetime_resolve`, `datetime_context` |
+| **Math** | `math_evaluate` |
+| **Conversion** | `unit_convert` |
+| **Command testing** | `command_test`, `command_test_suite`, `command_test_list` (E2E through command-center) |
+| **Docker** | `docker_ps`, `docker_logs`, `docker_restart`, `docker_stop`, `docker_start`, `docker_compose_{up,down,list}` |
+| **Tests** | `run_tests` |
 
-## Environment Variables
+Enable subset via `JARVIS_MCP_TOOLS` (comma list).
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `JARVIS_MCP_HOST` | localhost | Server host |
-| `JARVIS_MCP_PORT` | 7709 | Server port |
-| `JARVIS_MCP_TOOLS` | logs,debug,health,datetime,math,conversion,command,docker | Enabled tool groups |
-| `JARVIS_ROOT` | /Users/alexanderberardi/jarvis | Root dir for compose file discovery |
-| `JARVIS_CONFIG_URL` | - | Config service URL (preferred) |
-| `JARVIS_CONFIG_URL_STYLE` | - | Set to `dockerized` in Docker |
-| `JARVIS_LOGS_URL` | http://localhost:7702 | Fallback: Logs service URL |
-| `JARVIS_AUTH_URL` | http://localhost:7701 | Fallback: Auth service URL |
+## Config surface (env, no DB)
 
-## Service Discovery
+| Variable | Default | Purpose |
+|---|---|---|
+| `JARVIS_MCP_HOST` | `localhost` | Bind |
+| `JARVIS_MCP_PORT` | `7709` | Port |
+| `JARVIS_MCP_TOOLS` | `logs,debug,health,datetime,math,conversion,command,docker` | Enabled tool groups |
+| `JARVIS_ROOT` | (env) | Compose-file discovery root |
+| `JARVIS_CONFIG_URL` | — | Service discovery |
+| `JARVIS_CONFIG_URL_STYLE` | — | Set to `dockerized` in Docker |
+| `JARVIS_LOGS_URL` / `JARVIS_AUTH_URL` | — | Legacy fallbacks if config-service unavailable |
 
-Service URLs are fetched from `jarvis-config-service` at startup:
-1. If `JARVIS_CONFIG_URL` is set, URLs are fetched from config service
-2. If config service unavailable, falls back to `JARVIS_*_URL` env vars
-3. Background refresh every 5 minutes
+## Endpoints
 
-For Docker: Set `JARVIS_CONFIG_URL_STYLE=dockerized` to get `host.docker.internal` URLs.
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/health` | Status + enabled tools + service discovery state |
+| GET | `/sse` | MCP SSE stream |
+| POST | `/messages` | MCP message endpoint |
 
-## Available Tools
+## Dependency graph
 
-**Logs:**
-- `logs_query` → Query logs with filters
-- `logs_tail` → Recent logs from service
-- `logs_errors` → Find recent errors
-- `logs_services` → List services with logs
+**Upstream:** `jarvis-config-service` (service discovery, preferred), `jarvis-logs`, `jarvis-auth`, the Docker daemon (for docker_* tools), Postgres (for db_* tools)
 
-**Debug:**
-- `debug_health` → Check service health
-- `debug_service_info` → Get service details
+**Downstream:**
+- **Claude Code** (you, the developer)
+- **command-center** — optional, via `jarvis-mcp-client.init()`. Logged as non-fatal if missing.
 
-**Health:**
-- `health_check` → Check health of all/specific services
-- `health_service` → Detailed health for one service
+## If you must work here
 
-**Database (read-only):**
-- `db_list_databases` → List PostgreSQL databases
-- `db_list_schemas` → List schemas
-- `db_list_tables` → List tables
-- `db_describe_table` → Describe columns
-- `db_query` → Run read-only SELECT queries
+- Tool implementations live in `jarvis_mcp/tools/*.py` and `jarvis_mcp/services/*.py`.
+- New tools must be added to the `JARVIS_MCP_TOOLS` group default or the SSE handshake won't surface them.
+- Don't add settings DB tables here — keep it stateless.
+- Don't add write-tools (e.g. `db_insert`). Database access is intentionally read-only.
+- Don't break the SSE contract — Claude Code's reconnect logic depends on stable framing.
 
-**Datetime:**
-- `datetime_resolve` → Resolve relative dates ("tomorrow morning" → ISO)
-- `datetime_context` → Get current date/time context
-
-**Math:**
-- `math_evaluate` → Evaluate math expressions
-
-**Conversion:**
-- `unit_convert` → Convert units (temperature, weight, volume, length)
-
-**Command Testing:**
-- `command_test` → Test a single voice command through JCC pipeline
-- `command_test_suite` → Run batch of command tests with validation
-- `command_test_list` → List built-in test cases
-
-**Docker:**
-- `docker_ps` → List jarvis containers (name, status, image, ports)
-- `docker_logs` → Get recent logs from a container (partial name match)
-- `docker_restart` → Restart a container
-- `docker_stop` → Stop a running container
-- `docker_start` → Start a stopped container
-- `docker_compose_up` → `docker compose up -d` for a jarvis service
-- `docker_compose_down` → `docker compose down` for a jarvis service
-- `docker_compose_list` → List services with compose files
-
-**Tests:**
-- `run_tests` → Run pytest for a service
-
-## API Endpoints
-
-- `GET /health` → Health check (returns JSON with status, enabled tools, service discovery state)
-- `GET /sse` → SSE connection for MCP clients
-- `POST /messages` → MCP message endpoint
-
-## Dependencies
-
-**Python Libraries:**
-- mcp (Model Context Protocol)
-- starlette, sse-starlette
-- httpx
-- docker (Docker SDK for Python)
-
-**Service Dependencies:**
-- ✅ **Required**: `jarvis-config-service` (7700) - Service discovery (preferred)
-- ⚠️ **Optional**: `jarvis-logs` (7702) - Log querying tools
-- ⚠️ **Optional**: `jarvis-auth` (7701) - Health checks and service info
-- Fallback to env vars if config-service unavailable
-
-**Used By:**
-- Claude Code (development environment)
-
-**Impact if Down:**
-- ⚠️ No Claude Code integration tools
-- ⚠️ Manual service interaction required
-- ✅ Services continue running normally
+Because the service is on the deprecation watch-list, prefer fixing bugs over adding capability. New capability requests should be discussed first.
