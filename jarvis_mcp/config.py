@@ -1,8 +1,18 @@
 import logging
 import os
 from dataclasses import dataclass, field
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+
+def _default_jarvis_root() -> str:
+    """Derive the jarvis root (sibling-services dir) from this repo's location.
+
+    This file lives at ``<jarvis_root>/jarvis-mcp/jarvis_mcp/config.py``, so the
+    jarvis root is two parents up. Override with the ``JARVIS_ROOT`` env var.
+    """
+    return str(Path(__file__).resolve().parents[2])
 
 # Service name to config attribute mapping (short names)
 _SERVICE_URL_MAP = {
@@ -28,8 +38,9 @@ class JarvisMcpConfig:
     # Tool groups to enable (comma-separated in env, or list)
     enabled_tools: set[str] = field(default_factory=lambda: {"logs", "debug", "health", "datetime", "math", "conversion", "command", "docker"})
 
-    # Jarvis root directory (for discovering service compose files)
-    jarvis_root: str = "/Users/alexanderberardi/jarvis"
+    # Jarvis root directory (for discovering service compose files).
+    # Defaults to this repo's parent directory; override with JARVIS_ROOT.
+    jarvis_root: str = field(default_factory=_default_jarvis_root)
 
     # Service URLs (populated from config service or defaults)
     logs_url: str = "http://localhost:7702"
@@ -84,7 +95,7 @@ class JarvisMcpConfig:
             host=os.getenv("JARVIS_MCP_HOST", "localhost"),
             port=int(os.getenv("JARVIS_MCP_PORT", "7709")),
             enabled_tools=enabled_tools,
-            jarvis_root=os.getenv("JARVIS_ROOT", "/Users/alexanderberardi/jarvis"),
+            jarvis_root=os.getenv("JARVIS_ROOT") or _default_jarvis_root(),
             app_id=os.getenv("JARVIS_APP_ID"),
             app_key=os.getenv("JARVIS_APP_KEY"),
             postgres_host=os.getenv("POSTGRES_HOST", "localhost"),

@@ -1,5 +1,7 @@
 # jarvis-mcp
 
+> **⚠️ Potentially deprecated — do not extend.** Existing tools still work, but the architecture is under review; raise the question before adding new tools.
+
 MCP (Model Context Protocol) server for jarvis. Exposes jarvis services as tools for Claude Code.
 
 ## Architecture

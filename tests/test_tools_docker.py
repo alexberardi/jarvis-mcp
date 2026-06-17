@@ -164,8 +164,8 @@ class TestHandlerRouting:
 
     def test_docker_compose_list(self):
         services = [
-            {"name": "jarvis-auth", "path": "/home/alex/jarvis/jarvis-auth"},
-            {"name": "jarvis-tts", "path": "/home/alex/jarvis/jarvis-tts"},
+            {"name": "jarvis-auth", "path": "/srv/jarvis/jarvis-auth"},
+            {"name": "jarvis-tts", "path": "/srv/jarvis/jarvis-tts"},
         ]
         with patch("jarvis_mcp.tools.docker.docker_service.list_known_services", return_value=services):
             result = asyncio.run(handle_docker_tool("docker_compose_list", {}))

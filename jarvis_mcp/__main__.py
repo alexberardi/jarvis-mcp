@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 
 import uvicorn
@@ -57,9 +58,13 @@ _settings_router = create_settings_router(
 settings_app.include_router(_settings_router)
 
 
+# Debug mode is OFF by default so stack traces / source are not exposed when
+# the service binds to 0.0.0.0:7709. Opt in explicitly via JARVIS_MCP_DEBUG=1.
+_debug = os.getenv("JARVIS_MCP_DEBUG", "").lower() in ("1", "true", "yes")
+
 # Create Starlette app
 app = Starlette(
-    debug=True,
+    debug=_debug,
     routes=[
         Route("/health", endpoint=handle_health),
         Route("/sse", endpoint=handle_sse),
