@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "MCP server for jarvis - exposes jarvis services as tools for Claude"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = {text = "AGPL-3.0"}
 authors = [
     {name = "Jarvis Team"}
 ]
