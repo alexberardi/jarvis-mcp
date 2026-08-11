@@ -19,7 +19,7 @@ dependencies = [
     "starlette>=0.36.0",
     "uvicorn>=0.27.0",
     "fastapi>=0.109.0",
-    "sqlalchemy>=2.0.23",
+    "sqlalchemy>=2.0.51",
     "alembic>=1.12.1",
     "psycopg2-binary>=2.9.9",
     "jarvis-settings-client @ git+https://github.com/alexberardi/jarvis-settings-client.git@9902feb",
