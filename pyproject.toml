@@ -21,7 +21,7 @@ dependencies = [
     "fastapi>=0.109.0",
     "sqlalchemy>=2.0.23",
     "alembic>=1.12.1",
-    "psycopg2-binary>=2.9.9",
+    "psycopg2-binary>=2.9.13",
     "jarvis-settings-client @ git+https://github.com/alexberardi/jarvis-settings-client.git@9902feb",
     "docker>=7.0.0",
 ]
