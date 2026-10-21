@@ -1,6 +1,7 @@
 # jarvis-mcp
 
-> **⚠️ Potentially deprecated — do not extend.** Existing tools still work, but the architecture is under review; raise the question before adding new tools.
+> [!WARNING]
+> **Retired: no longer maintained, and this repository will be archived.** jarvisd does not include it. The old multi-container stack is replaced by jarvisd ([jarvis-server](https://github.com/alexberardi/jarvis-server)). New installs: [installer.jarvisautomation.io](https://installer.jarvisautomation.io). Moving an existing install: [Migrating from the Docker install](https://docs.jarvisautomation.dev/install/migrating-from-docker/).
 
 MCP (Model Context Protocol) server for jarvis. Exposes jarvis services as tools for Claude Code.
 
